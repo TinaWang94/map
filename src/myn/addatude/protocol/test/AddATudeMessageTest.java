@@ -109,6 +109,24 @@ public class AddATudeMessageTest {
 
     }
     
+    
+    
+    /**
+     * test short decode
+     * It will throw an exception since message is short
+     * @throws AddATudeException - if deserialization or validation failure
+     * @throws EOFException - if premature end of stream
+     * @throws UnsupportedEncodingException - unsupported encoding exception
+     */
+    @Test (expected = EOFException.class)
+    public void testShort() throws AddATudeException, EOFException, UnsupportedEncodingException {
+        MessageInput in = new MessageInput(new ByteArrayInputStream("ADDA".getBytes("ASCII")));
+        @SuppressWarnings({ "static-access" })
+        AddATudeMessage b=a.decode(in);
+        b.setMapId(-1);
+
+    }
+    
     /**
      * test getMapId
      * 
@@ -136,9 +154,9 @@ public class AddATudeMessageTest {
         @SuppressWarnings("static-access")
         AddATudeMessage b=a.decode(in);
         assertEquals("RESPONSE", b.getOperation());
-        assertEquals("mapId=345, mapName=BU, number of location record=1,"
-                + " LocationRecord0: userId=1, longitude=1.2, latitude=3.4,"
-                + " location=BU, location name=Baylor.", b.toString());
+        assertEquals("mapId=345 - BU\r\n"
+                + "User 1:location name=Baylor."
+                + "longitude=1.2, latitude=3.4, location=BU, ", b.toString());
 
     }
     
@@ -169,8 +187,8 @@ public class AddATudeMessageTest {
         @SuppressWarnings("static-access")
         AddATudeMessage b=a.decode(in);
         assertEquals("NEW", b.getOperation());
-        assertEquals("mapId=345.new LocationRecord=userId=1, longitude=1.2,"
-                + " latitude=3.4, location=BU, location name=Baylor.", b.toString());
+        assertEquals("mapId=345.new LocationRecord=User 1:location name=Baylor."
+                + "longitude=1.2, latitude=3.4, location=BU, ", b.toString());
     }
 
 }

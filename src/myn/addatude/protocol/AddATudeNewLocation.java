@@ -17,7 +17,7 @@
 package myn.addatude.protocol;
 
 import java.io.EOFException;
-import java.io.IOException;
+
 
 /**
  * Represents an AddATude new location and provides serialization/deserialization
@@ -30,6 +30,16 @@ public class AddATudeNewLocation extends AddATudeMessage {
     private final String operation="NEW";
     
     /**
+     * check valiation of location record
+     * @param lr - a location record waits for check
+     * @throws AddATudeException - if validation fails
+     */
+    private void checkLocation(LocationRecord lr) throws AddATudeException {
+        if(lr == null) {
+            throw new AddATudeException ("Location recoed should not be null.");
+        }
+    }
+    /**
      * Constructs new location using set values
      * @param mapId - ID for message map
      * @param location - new location
@@ -37,9 +47,7 @@ public class AddATudeNewLocation extends AddATudeMessage {
      */
     public AddATudeNewLocation (int mapId, LocationRecord location) throws AddATudeException {
         checkMapId(mapId);
-        if(location == null) {
-            throw new AddATudeException ("Location recoed should not be null.");
-        }
+        checkLocation(location);
         this.mapId=mapId;
         this.location=location;
     } 
@@ -72,20 +80,10 @@ public class AddATudeNewLocation extends AddATudeMessage {
         aBuf.append(mapId+" ");
         aBuf.append(operation+" ");
         String aString = new String(aBuf);
-        try {
-            out.write(aString.getBytes());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            throw new AddATudeException("serialization output fails");
-        }
+        checkShortMsg(out,aString);
         location.encode(out);
         aString=EOLN;
-        try {
-            out.write(aString.getBytes());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            throw new AddATudeException ("serialization output fails");
-        }
+        checkShortMsg(out,aString);
         
     }   
     
@@ -95,9 +93,7 @@ public class AddATudeNewLocation extends AddATudeMessage {
      * @throws AddATudeException - if null error message
      */
     public final  void setLocationRecord (LocationRecord location) throws AddATudeException{
-        if(location == null) {
-            throw new AddATudeException ("Location recoed should not be null.");
-        }        
+        checkLocation(location);       
         this.location=location;       
     }
     

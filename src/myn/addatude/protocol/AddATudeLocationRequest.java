@@ -13,7 +13,7 @@
  */
 package myn.addatude.protocol;
 
-import java.io.IOException;
+
 
 
 /**
@@ -52,12 +52,7 @@ public class AddATudeLocationRequest extends AddATudeMessage {
         aBuf.append(operation+" ");
         aBuf.append(EOLN);
         String aString = new String(aBuf);
-        try {
-            out.write(aString.getBytes());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            throw new AddATudeException("serialization output fails");
-        }
+        checkShortMsg(out,aString);
     }
     /**
      * AddATudeError decode the request part

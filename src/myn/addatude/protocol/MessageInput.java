@@ -90,7 +90,7 @@ public class MessageInput {
      * @throws EOFException - if premature end of stream
      * 
      * */
-    private  String readToSpace (InputStream in) throws EOFException  {
+    public  String readToSpace () throws EOFException  {
         int bt = 0;
         StringBuffer aBuf = new StringBuffer();
         String aString = null;
@@ -118,6 +118,45 @@ public class MessageInput {
     }
     
     /**
+     * Constructs read a MessageInput by byte
+     * 
+     * @param in -input source
+     * @param num- number of bytes we should read
+     * 
+     * @return aString-the result string after decoding
+     * 
+     * @throws AddATudeException - if deserialization or validation failure
+     * @throws EOFException - if premature end of stream
+     * 
+     * */
+    public String readByNum (int num) throws EOFException  {
+        int bt = 0;
+        StringBuffer aBuf = new StringBuffer();
+        String aString = null;
+    
+        for(int i=0;i<num;i++) {
+            try {
+                if((bt=in.read()) != -1 ) {
+                    aBuf.append((char)bt);
+                }
+                else {
+                    throw new EOFException("This location record needs more information.");
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                if(e instanceof EOFException) {
+                    throw new EOFException("This location record needs more information.");
+                }
+                e.printStackTrace();
+            }
+        }
+            aString=aBuf.toString();  
+            return aString;
+    }
+    
+    
+    
+    /**
      * Constructs read a operation from message
      * 
      * 
@@ -129,7 +168,34 @@ public class MessageInput {
      * */
     public String readOperation() throws AddATudeException, EOFException{     
         String aString;
-        aString = readToSpace(in);
+        aString = readToSpace();
         return aString;
+        
+    }
+    /**
+     * Construct a function to read to 
+     * the end of line from message
+     * 
+     * @throws EOFException - if premature end of stream
+     * @throws AddATudeException - invalid format
+     * 
+     * */
+    public void readToEOLN() throws AddATudeException, EOFException {
+        byte []b = new byte[2];
+        int length = 0;
+        try {
+            length=read(b,0,2);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+         if(length != 2) {
+             throw new EOFException ("Need EOLN symbol");
+         }
+         //13 is ASCII code for \r and 10 is ASCII code for \n
+         if(b[0] != 13 || b[1] != 10) {
+             throw new AddATudeException("End of line format error");
+         }
+
     }
 }

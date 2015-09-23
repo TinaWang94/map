@@ -1,4 +1,4 @@
-package myn.addatude.tcp;
+package myn.addatude.app;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -16,17 +16,25 @@ import myn.addatude.protocol.MessageOutput;
 public class AddATudeClient {
     private final String ALL="ALL";
     private final String NEW="NEW";
-    private void checkInt(int aInt) throws AddATudeException {
+    private final String EOLN="\r\n";
+    
+    private void checkInt(int aInt) throws AddATudeException  {
         if(aInt <0) {
             throw new AddATudeException("Invalid id number.");
         }
         
     }
+    
+    
+    
     private int mapId;
     private Socket socket;
     private int userId;
     private MessageInput in;
     private MessageOutput out;
+    
+    
+    
     
     public int getMapId(){
         return mapId;
@@ -43,16 +51,27 @@ public class AddATudeClient {
         this.userId=userId;
     }
     
-    public AddATudeClient(String host,int port) throws IOException{
-        socket = new Socket(host,port);
-        out = new MessageOutput(socket.getOutputStream());
-        in=new MessageInput(socket.getInputStream());
+    public AddATudeClient(String host,int port) {    
+        try {
+            socket = new Socket(host,port);
+            if(!socket.isConnected()) {
+                System.out.println("Unable to communicate: "
+                        + "Cannot connect to the server.");
+                System.exit(0);
+            }
+            out = new MessageOutput(socket.getOutputStream());
+            in=new MessageInput(socket.getInputStream());
+        } catch (IOException e) {
+            System.out.println("Unable to communicate: "+e.getMessage());
+            System.exit(0);
+        }
     }
     
     public void interactLoop( ) throws AddATudeException, EOFException {
         Scanner keyboard = new Scanner(System.in);
+        keyboard.useDelimiter(EOLN);
         while(true) {
-            System.out.println("Operation>");
+            System.out.print("Operation>");
             String operation = keyboard.next();
             switch(operation) {
                 case ALL:
@@ -78,35 +97,38 @@ public class AddATudeClient {
         
     }
     
-    private void operationAll (Scanner keyboard) throws AddATudeException, EOFException {
+    private void operationAll (Scanner keyboard) throws AddATudeException, EOFException  {
         System.out.print("Map Id>"); 
-        mapId= keyboard.nextInt();
-        AddATudeMessage request = new AddATudeLocationRequest(mapId);
+        int id=keyboard.nextInt();
+        mapId=id ;
+        
+        AddATudeMessage request = null;
+        request = new AddATudeLocationRequest(mapId);
+        
         request.encode(out);
         operationDecode();
     }
     private void operationDecode () throws EOFException, AddATudeException {
-        AddATudeMessage response = AddATudeMessage.decode(in);      
-        System.out.println(response.toString());
+        AddATudeMessage decode = AddATudeMessage.decode(in);      
+        System.out.println(decode.toString());
     }
     private void operationNew (Scanner keyboard) throws AddATudeException, EOFException {
         System.out.print("Map Id>"); 
-        mapId= keyboard.nextInt();
-        System.out.print("User Id>"); 
-        userId=keyboard.nextInt();
-        System.out.print("Longitude>"); 
-        String longitude = keyboard.next();
-        System.out.print("Latitude>"); 
-        String latitude = keyboard.next();
-        System.out.print("Location Name>"); 
-        String locationName = keyboard.next();
-        System.out.print("Location Description>");
-        String locationDescription = keyboard.next();
-       
+        int id=keyboard.nextInt();
+        checkInt(id);
+        mapId=id ;
+        
         AddATudeMessage newLocation = new AddATudeNewLocation(mapId,
-                new LocationRecord(userId,longitude,latitude,locationName,locationDescription));
+                new LocationRecord(keyboard,System.out));
         newLocation.encode(out);
         operationDecode();
+        
     }
+    public static void main(String[] args) throws IOException, AddATudeException {
+        // TODO Auto-generated method stub
+        AddATudeClient client = new AddATudeClient(args[0],Integer.valueOf(args[1]));
+        client.interactLoop();
+    }
+
    
 }

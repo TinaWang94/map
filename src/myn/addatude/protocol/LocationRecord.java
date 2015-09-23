@@ -42,7 +42,64 @@ public class LocationRecord {
     /*locationDescription, string type*/
     private String locationDescription;
 
+    /**
+     * check valiation of user id
+     * @param id - userId waits for check 
+     * @throws AddATudeException -  validation failure
+     */
+    private void checkId( int id) throws AddATudeException {
+        if(id < 0) {
+            throw new AddATudeException("userId should be a non-nagative number.");
+        }
+    }
     
+    /**
+     * check valiation of longitude
+     * @param aLongitude - a longitude waits for check
+     * @throws AddATudeException -  validation failure
+     */
+    private void checkLongitude(String aLongitude) throws AddATudeException {
+        if(aLongitude == null) {
+            throw new AddATudeException("Longitude shouldn't be null.");
+        }
+        if(!aLongitude.matches(CHECK)) {
+            throw new AddATudeException("Longitude doesn't match the given format.");
+        }
+    }
+    
+    /**
+     * check valiation of latitude
+     * @param aLatitude - a latitude waits for check
+     * @throws AddATudeException - validation failure
+     */
+    private void checkLatitude(String aLatitude) throws AddATudeException {
+        if(aLatitude == null) {
+            throw new AddATudeException("Longitude shouldn't be null.");
+        }
+        if(!aLatitude.matches(CHECK)) {
+            throw new AddATudeException("Longitude doesn't match the given format.");
+        }
+    }
+    /**
+     * check valiation for location name
+     * @param aLocationName - a location name waits for check
+     * @throws AddATudeException - validation failure
+     */
+    private void checkLocationName(String aLocationName) throws AddATudeException {
+        if(aLocationName == null) {
+            throw new AddATudeException("Location name shouldn't be null.");
+        }
+    }
+    /**
+     * check valiation for location description
+     * @param aLocationDescription - a locationDescription waits for check
+     * @throws AddATudeException -  validation failure
+     */
+    private void checkLocationDescription(String aLocationDescription) throws AddATudeException{
+        if(aLocationDescription == null) {
+            throw new AddATudeException("Location Description shouldn't be null.");
+        }
+    }
     /**
      * Constructs location record with set values
      * 
@@ -57,27 +114,12 @@ public class LocationRecord {
     
     public LocationRecord(int userId, String longitude, String latitude,
             String locationName, String locationDescription) throws AddATudeException  {
-        if(userId < 0) {
-            throw new AddATudeException("userId should be a non-nagative number.");
-        }
-        if(longitude == null) {
-            throw new AddATudeException("Longitude shouldn't be null.");
-        }
-        if(latitude == null) {
-            throw new AddATudeException("Latitude shouldn't be null.");
-        }
-        if(!longitude.matches(CHECK)) {
-            throw new AddATudeException("Longitude doesn't match the given format.");
-        }
-        if(!latitude.matches(CHECK)) {
-            throw new AddATudeException("Latitude doesn't match the given format.");
-        }
-        if(locationName == null) {
-            throw new AddATudeException("Location name shouldn't be null.");
-        }
-        if(locationDescription == null) {
-            throw new AddATudeException("Location Description shouldn't be null.");
-        }
+        checkId(userId);
+        checkLatitude(latitude);
+        checkLongitude(longitude);
+        checkLocationName(locationName);
+        checkLocationDescription(locationDescription);
+        
         this.userId = userId;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -105,17 +147,17 @@ public class LocationRecord {
         String aString = null;
         //get id,longitude, latitude and length of name
         for(int i = 0; i<4 ; i++) {
-            aString = readToSpace(in);
+            aString = in.readToSpace();
             length = parse(count++,aString,length);
         }
         //get location name
-        aString = readByNum(length,in);
+        aString = in.readByNum(length);
         length=parse(count++,aString,length);
         //get length of location description
-        aString = readToSpace(in);
+        aString = in.readToSpace();
         length = parse(count++,aString,length);
         //get location description
-        aString = readByNum(length,in);
+        aString = in.readByNum(length);
         length=parse(count,aString,length);
         
         if(count < 7) {
@@ -124,78 +166,7 @@ public class LocationRecord {
             
 
     }
-    /**
-     * Constructs read a MessageInput till hit a space
-     * 
-     * @param in -input source
-     * 
-     * @return aString-the result string after decoding
-     * 
-     * @throws EOFException - if premature end of stream
-     * 
-     * */
-    private String readToSpace (MessageInput in) throws EOFException  {
-        int bt = 0;
-        StringBuffer aBuf = new StringBuffer();
-        String aString = null;
     
-        try {
-            while((bt=in.read()) != -1) {
-                //32 is ASCII num of a single space                   
-                if(bt == 32 ) {
-                    aString=aBuf.toString();     
-                    break;
-                }
-                else{      
-                    //put the byte just read in buffer
-                    aBuf.append((char)bt);
-                }  
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(bt == -1) {
-            throw new EOFException("This location record needs more information.");
-        }
-            
-        return aString;
-    }
-    /**
-     * Constructs read a MessageInput by byte
-     * 
-     * @param in -input source
-     *        num- number of bytes we should read
-     * 
-     * @return aString-the result string after decoding
-     * 
-     * @throws AddATudeException - if deserialization or validation failure
-     *         java.io.EOFException - if premature end of stream
-     * 
-     * */
-    private String readByNum (int num, MessageInput in) throws EOFException  {
-        int bt = 0;
-        StringBuffer aBuf = new StringBuffer();
-        String aString = null;
-    
-        for(int i=0;i<num;i++) {
-            try {
-                if((bt=in.read()) != -1 ) {
-                    aBuf.append((char)bt);
-                }
-                else {
-                    throw new EOFException("This location record needs more information.");
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                if(e instanceof EOFException) {
-                    throw new EOFException("This location record needs more information.");
-                }
-                e.printStackTrace();
-            }
-        }
-            aString=aBuf.toString();  
-            return aString;
-    }
     
     /**
      * This function using 6 situations to decode the messafe information
@@ -217,25 +188,19 @@ public class LocationRecord {
                 if(!aString.matches(CHECK2)) {
                     throw new AddATudeException("userId doesn't match the given format.");
                 }
-                if(Integer.valueOf(aString) < 0) {
-                    throw new AddATudeException("userId should be a non-nagative number.");
-                }
+                checkId(Integer.valueOf(aString));
                 userId = Integer.valueOf(aString);
                 
                 break;
             /*get longitude in second situation*/
             case 2:
-                if(!aString.matches(CHECK)) {
-                    throw new AddATudeException("Longitude doesn't match the given format.");
-                }
+                checkLatitude(aString);
                 longitude = aString;
                 
                 break;
             /*get latutude in third situation*/
             case 3:
-                if(!aString.matches(CHECK)) {
-                    throw new AddATudeException("Latitude doesn't match the given format.");
-                }
+                checkLatitude(aString);
                 latitude = aString;
                 
                 break;
@@ -285,7 +250,33 @@ public class LocationRecord {
      * */
     
     public LocationRecord(Scanner in, PrintStream out) throws AddATudeException{
+        int aId;
+        String aString;
         
+        out.print("User Id>"); 
+        aId=in.nextInt();
+        checkId(aId);
+        userId=aId;
+        
+        out.print("Longitude>"); 
+        aString=in.next();
+        checkLongitude(aString);
+        longitude = aString;
+        
+        out.print("Latitude>"); 
+        aString=in.next();
+        checkLatitude(aString);
+        latitude = aString;
+        
+        out.print("Location Name>"); 
+        aString=in.next();
+        checkLocationName(aString);
+        locationName = aString;
+        
+        out.print("Location Description>");
+        aString=in.next();
+        checkLocationDescription(aString);
+        locationDescription = aString;
     }
     
     /**
@@ -409,13 +400,8 @@ public class LocationRecord {
      * @throws AddATudeException - invalid
      */
     public void setLatitude(String latitude) throws AddATudeException {
-        if(latitude == null) {
-            throw new AddATudeException("Latitude shouldn't be null.");
-        }
+        checkLatitude(latitude);
         this.latitude =latitude; 
-        if(!latitude.matches(CHECK)) {
-            throw new AddATudeException("Latitude doesn't match the given format.");
-        }
     }
     
     /**
@@ -428,9 +414,8 @@ public class LocationRecord {
     
     public void setLocationDescription(String locationDescription) throws AddATudeException {
         
-        if(locationDescription == null) {
-            throw new AddATudeException("Location description shouldn't be null.");
-        }this.locationDescription = locationDescription;
+        checkLocationDescription(locationDescription);
+        this.locationDescription = locationDescription;
     }
     
     /**
@@ -441,9 +426,7 @@ public class LocationRecord {
      * */
     
     public void setLocationName(String locationName) throws AddATudeException {
-        if(locationName == null) {
-            throw new AddATudeException("Location name shouldn't be null.");
-        }
+        checkLocationName(locationName);
         this.locationName = locationName;
     }
     
@@ -455,12 +438,7 @@ public class LocationRecord {
      * */
     
     public void setLongitude(String longitude) throws AddATudeException{
-        if(longitude == null) {
-            throw new AddATudeException("Longitude shouldn't be null.");
-        }
-        if(!longitude.matches(CHECK)) {
-            throw new AddATudeException("Longitude doesn't match the given format.");
-        }
+        checkLongitude(longitude);
         this.longitude = longitude;
         
     }
@@ -472,9 +450,7 @@ public class LocationRecord {
      * */
     
     public void setUserId(int userId) throws AddATudeException{
-        if(userId < 0 ) {
-            throw new AddATudeException("Invalid userId.");
-        }
+        checkId(userId);
         this.userId = userId;
         
     }
@@ -493,10 +469,12 @@ public class LocationRecord {
         StringBuffer result = new StringBuffer();
         
         result.append("User "+userId+":");
-        result.append("location name="+locationDescription+".");
-        result.append("longitude="+longitude+", ");
-        result.append("latitude="+latitude+", ");
-        result.append("location="+locationName+", ");
+        result.append(locationName+" - ");
+        result.append(locationDescription);
+        result.append(" at (");
+        result.append(longitude+", ");
+        result.append(latitude+")\r\n");
+        
         
         return result.toString();
     }

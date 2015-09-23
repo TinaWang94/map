@@ -26,6 +26,7 @@ import myn.addatude.protocol.AddATudeLocationResponse;
 import myn.addatude.protocol.AddATudeMessage;
 import myn.addatude.protocol.LocationRecord;
 import myn.addatude.protocol.MessageInput;
+import myn.addatude.protocol.MessageOutput;
 
 import org.junit.Test;
 /**
@@ -150,6 +151,20 @@ public class AddATudeLocationResponseTest {
          assertEquals("userId=1, longitude=1.3, latitude=3.4, location=BU, location name=Baylor.",lr.get(1).toString());
          
      }
+     /**
+      * test Encode function
+      * @throws AddATudeException - if deserialization or validation failure
+      * @throws EOFException - if premature end of stream
+      */
+      @Test
+      public void testEncode() throws AddATudeException, IOException {
+          MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
+          MessageOutput out = null;
+          @SuppressWarnings("static-access")
+          AddATudeMessage b=a.decode(in);
+          b.encode(out);
+
+      }
      
      
 

@@ -14,7 +14,6 @@
 package myn.addatude.protocol;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 /**
@@ -35,6 +34,16 @@ public class AddATudeLocationResponse extends AddATudeMessage{
     /*operation name, should be "response" in this class*/
     private final String operation="RESPONSE";
     
+    /**
+     * check valiation of mapName
+     * @param aName - map name waits for check
+     * @throws AddATudeException -  if validation fails
+     */
+    private void checkMapName(String aName) throws AddATudeException {
+        if(aName == null) {
+            throw new AddATudeException("Name of map shouldn't be null");
+        } 
+    }
     
     /**
      * Constructs location response using set values
@@ -46,10 +55,9 @@ public class AddATudeLocationResponse extends AddATudeMessage{
             throws AddATudeException {
         checkMapId(mapId);
         this.mapId=mapId;
+        lr = new LinkedList<>();
         // TODO Auto-generated constructor stub
-        if(mapName == null) {
-            throw new AddATudeException("Name of map shouldn't be null");
-        }   
+        checkMapName(mapName);  
         this.mapName=mapName;       
     }
 
@@ -69,27 +77,18 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         aBuf.append(mapId+" ");
         aBuf.append(operation+" ");
         aBuf.append(mapName.length()+" ");
+        aBuf.append(mapName);
         aBuf.append(lrNum+" ");
         
         String aString = new String(aBuf);
-        try {
-            out.write(aString.getBytes());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            throw new AddATudeException ("serialization output fails");
-        }
+        checkShortMsg(out,aString);
         
         for(LocationRecord x: lr ) {
             x.encode(out);
         }
         
         aString=EOLN;
-        try {
-            out.write(aString.getBytes());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            throw new AddATudeException ("serialization output fails");
-        }
+        checkShortMsg(out,aString);
     }
     
     /**
@@ -108,16 +107,16 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         
         //get map name
         //i)get length of map name 
-        aString = readToSpace(in);
+        aString = in.readToSpace();
         if(!aString.matches(CHECK2)) {
             throw new AddATudeException("Length of map name doesn't match the given format.");
         }
         length = Integer.valueOf(aString);
         //ii)get the character list of the name
-        mapName=readByNum(length,in);
+        mapName=in.readByNum(length);
         
         //get the record num
-        aString = readToSpace(in);
+        aString = in.readToSpace();
         if(!aString.matches(CHECK2)) {
             throw new AddATudeException("LocationRecord list's count doesn't match the given format.");
         }
@@ -166,9 +165,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
      * @throws AddATudeException - if map name is null
      */
      public final void setMapName(String mapName) throws AddATudeException {
-         if(mapName == null) {
-             throw new AddATudeException("Name of map shouldn't be null");
-         }
+         checkMapName(mapName);  
          this.mapName=mapName;
      }
      

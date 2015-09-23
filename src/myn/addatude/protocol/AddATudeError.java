@@ -14,7 +14,6 @@
 package myn.addatude.protocol;
 
 import java.io.EOFException;
-import java.io.IOException;
 /**
  * 
  *  This class extends the message class
@@ -37,6 +36,17 @@ public class AddATudeError extends AddATudeMessage{
         
     }
     /**
+     * check the valiation of error message
+     * @param msg - error message wait for check
+     * @throws AddATudeException - valiation failed
+     * 
+     * */
+    private void checkErrorMsg(String msg) throws AddATudeException {
+        if(msg == null) {
+            throw new AddATudeException ("Error message shouldn't be null");
+        }
+    }
+    /**
      * constructor AddATudeError using set values
      * @param mapId - ID for message map
      * @param errorMessage - error message
@@ -47,10 +57,7 @@ public class AddATudeError extends AddATudeMessage{
     public AddATudeError(int mapId,String errorMessage) throws AddATudeException {
         checkMapId(mapId);
         this.mapId=mapId;
-        // TODO Auto-generated constructor stub
-        if(errorMessage == null) {
-            throw new AddATudeException ("Error message shouldn't be null");
-        }
+        checkErrorMsg(errorMessage);
         this.errorMessage=errorMessage;
     }
     
@@ -71,12 +78,7 @@ public class AddATudeError extends AddATudeMessage{
         aBuf.append(errorMessage.length()+" ");
         aBuf.append(errorMessage+EOLN);
         String aString = new String(aBuf);
-        try {
-            out.write(aString.getBytes());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-           throw new AddATudeException("serialization output fails");
-        }
+        checkShortMsg(out,aString);
         
     }
     /**
@@ -94,13 +96,13 @@ public class AddATudeError extends AddATudeMessage{
         int length=0;
         
         //get message (this message should be a string)
-        aString = readToSpace(in);
+        aString = in.readToSpace();
         if(!aString.matches(CHECK2)) {
             throw new AddATudeException("Length of error message doesn't match the given format.");
         }
         length = Integer.valueOf(aString);
         
-        aString=readByNum(length,in);  
+        aString=in.readByNum(length);  
         errorMessage=aString;
     }
   
@@ -110,9 +112,7 @@ public class AddATudeError extends AddATudeMessage{
      * @throws AddATudeException - throw exception when error message is null
      */
     public final void setErrorMessage (String errorMessage) throws AddATudeException {
-        if(errorMessage == null) {
-            throw new AddATudeException("Error message shouldn't be null");
-        }
+        checkErrorMsg(errorMessage);
         this.errorMessage=errorMessage;
     }
     /**
@@ -132,8 +132,7 @@ public class AddATudeError extends AddATudeMessage{
     public String toString() {
         StringBuffer result = new StringBuffer();
         
-        result.append("mapId="+mapId+", ");
-        result.append("error message="+errorMessage+".");
+        result.append("Error: "+errorMessage);
         return result.toString();
     }
     
