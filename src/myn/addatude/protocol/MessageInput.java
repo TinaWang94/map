@@ -28,11 +28,27 @@ public class MessageInput {
     /*treat message input as a mediator of a inputstream*/
     private InputStream in;
     
+
+    /**
+     * read in everything from inputstream and print out to screen
+     * for testing purpose
+     * 
+     * @throws IOException - input error
+     */
+    public void readAll() throws IOException {
+        int bt = 0;
+        StringBuffer aBuf = new StringBuffer();
+        String aString = null;
+        while((bt=in.read()) != -1) {
+            aBuf.append((char)bt);
+        }
+        aString=aBuf.toString();
+        System.out.println(aString+"\r\n");
+    }
     /**
      * Constructs a new input source from an InputStream
-     * @param in - byte input source
+     * @param in - byte input source 
      * */
-    
     public MessageInput(InputStream in) {
         this.in = in;
     }
@@ -83,7 +99,6 @@ public class MessageInput {
     /**
      * Constructs read a MessageInput till hit a space
      * 
-     * @param in -input source
      * 
      * @return aString-the result string after decoding
      * 
@@ -120,12 +135,10 @@ public class MessageInput {
     /**
      * Constructs read a MessageInput by byte
      * 
-     * @param in -input source
      * @param num- number of bytes we should read
      * 
      * @return aString-the result string after decoding
      * 
-     * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
      * 
      * */

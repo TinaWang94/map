@@ -26,7 +26,6 @@ import myn.addatude.protocol.AddATudeLocationResponse;
 import myn.addatude.protocol.AddATudeMessage;
 import myn.addatude.protocol.LocationRecord;
 import myn.addatude.protocol.MessageInput;
-import myn.addatude.protocol.MessageOutput;
 
 import org.junit.Test;
 /**
@@ -38,7 +37,7 @@ import org.junit.Test;
  * */
 public class AddATudeLocationResponseTest {
 
-    private AddATudeLocationResponse a;
+    private AddATudeLocationResponse a=null;
     
     /**
      * test response message
@@ -52,9 +51,7 @@ public class AddATudeLocationResponseTest {
          @SuppressWarnings("static-access")
          AddATudeMessage b=a.decode(in);
          assertEquals("RESPONSE", b.getOperation());
-         assertEquals("mapId=345, mapName=BU, number of location record=1,"
-                 + " LocationRecord0: userId=1, longitude=1.2, latitude=3.4,"
-                 + " location=BU, location name=Baylor.", b.toString());
+         assertEquals("mapId=345 - BU\r\nUser 1:BU - Baylor at (1.2, 3.4)\r\n", b.toString());
 
      }
      /**
@@ -90,9 +87,7 @@ public class AddATudeLocationResponseTest {
          MessageInput in2 = new MessageInput(new ByteArrayInputStream("1 1.2 3.4 2 BU6 Baylor".getBytes("ASCII")));
          lr = new LocationRecord(in2);
          ((AddATudeLocationResponse)b).addLocationRecord(lr);
-         assertEquals("mapId=345, mapName=BU, number of location record=2,"
-                 + " LocationRecord0: userId=1, longitude=1.2, latitude=3.4, location=BU, location name=Baylor."
-                 + "LocationRecord1: userId=1, longitude=1.2, latitude=3.4, location=BU, location name=Baylor.",
+         assertEquals("mapId=345 - BU\r\nUser 1:BU - Baylor at (1.2, 3.4)\r\nUser 1:BU - Baylor at (1.2, 3.4)\r\n",
                  b.toString());
          
      }
@@ -147,25 +142,9 @@ public class AddATudeLocationResponseTest {
          AddATudeMessage b=a.decode(in);
          List<LocationRecord> lr;
          lr=((AddATudeLocationResponse)b).getLocationRecordList();
-         assertEquals("userId=1, longitude=1.2, latitude=3.4, location=BU, location name=Baylor.",lr.get(0).toString());
-         assertEquals("userId=1, longitude=1.3, latitude=3.4, location=BU, location name=Baylor.",lr.get(1).toString());
+         assertEquals("User 1:BU - Baylor at (1.2, 3.4)\r\n",lr.get(0).toString());
+         assertEquals("User 1:BU - Baylor at (1.3, 3.4)\r\n",lr.get(1).toString());
          
      }
-     /**
-      * test Encode function
-      * @throws AddATudeException - if deserialization or validation failure
-      * @throws EOFException - if premature end of stream
-      */
-      @Test
-      public void testEncode() throws AddATudeException, IOException {
-          MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
-          MessageOutput out = null;
-          @SuppressWarnings("static-access")
-          AddATudeMessage b=a.decode(in);
-          b.encode(out);
-
-      }
-     
-     
 
 }

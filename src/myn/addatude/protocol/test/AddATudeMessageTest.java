@@ -34,7 +34,7 @@ import org.junit.Test;
  */
 public class AddATudeMessageTest {
 
-    private AddATudeMessage a;
+    private AddATudeMessage a = null;
 
     /**
      * test the request message
@@ -154,9 +154,7 @@ public class AddATudeMessageTest {
         @SuppressWarnings("static-access")
         AddATudeMessage b=a.decode(in);
         assertEquals("RESPONSE", b.getOperation());
-        assertEquals("mapId=345 - BU\r\n"
-                + "User 1:location name=Baylor."
-                + "longitude=1.2, latitude=3.4, location=BU, ", b.toString());
+        assertEquals("mapId=345 - BU\r\nUser 1:BU - Baylor at (1.2, 3.4)\r\n", b.toString());
 
     }
     
@@ -172,7 +170,7 @@ public class AddATudeMessageTest {
         @SuppressWarnings("static-access")
         AddATudeMessage b=a.decode(in);
 
-        assertEquals("mapId=345, error message=error.", b.toString());
+        assertEquals("Error: error", b.toString());
     }
     
     /**
@@ -187,8 +185,7 @@ public class AddATudeMessageTest {
         @SuppressWarnings("static-access")
         AddATudeMessage b=a.decode(in);
         assertEquals("NEW", b.getOperation());
-        assertEquals("mapId=345.new LocationRecord=User 1:location name=Baylor."
-                + "longitude=1.2, latitude=3.4, location=BU, ", b.toString());
+        assertEquals("mapId=345.new LocationRecord=User 1:BU - Baylor at (1.2, 3.4)\r\n", b.toString());
     }
 
 }

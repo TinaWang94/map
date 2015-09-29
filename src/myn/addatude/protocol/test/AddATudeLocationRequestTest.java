@@ -33,7 +33,7 @@ import org.junit.Test;
  */
 public class AddATudeLocationRequestTest {
 
-    private AddATudeLocationRequest a;
+    private AddATudeLocationRequest a = null;
     /**
      * test decode of request and toString function
      * @throws AddATudeException - if deserialization or validation failure

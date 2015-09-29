@@ -28,13 +28,7 @@ public class AddATudeError extends AddATudeMessage{
     /* variable errorMessage for error message*/
     private String errorMessage;
     private final String operation="ERROR";
-    /**
-     * an empty constructor used for testing
-     * 
-     * */
-    public AddATudeError() {
-        
-    }
+
     /**
      * check the valiation of error message
      * @param msg - error message wait for check
@@ -55,6 +49,7 @@ public class AddATudeError extends AddATudeMessage{
      * */
 
     public AddATudeError(int mapId,String errorMessage) throws AddATudeException {
+        super();
         checkMapId(mapId);
         this.mapId=mapId;
         checkErrorMsg(errorMessage);

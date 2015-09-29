@@ -35,7 +35,7 @@ import org.junit.Test;
  *
  */
 public class AddATudeNewLocationTest {
-    private AddATudeNewLocation a;
+    private AddATudeNewLocation a = null;
 
     /**
      * test new location record

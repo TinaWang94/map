@@ -32,7 +32,6 @@ import org.junit.Test;
  */
 public class AddATudeErrorTest {
 
-    private AddATudeError a;
     
     /**
      * test decode of error message and toString function
@@ -45,10 +44,9 @@ public class AddATudeErrorTest {
     public void testDecode() throws EOFException, AddATudeException, UnsupportedEncodingException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 error\r\n".getBytes("ASCII")));
         
-        @SuppressWarnings("static-access")
-        AddATudeMessage b=a.decode(in);
+        AddATudeMessage b=AddATudeMessage.decode(in);
 
-        assertEquals("mapId=345, error message=error.", b.toString());
+        assertEquals("Error: error", b.toString());
     }
     /**
      * invalid end of line format, should throw an exception
@@ -61,8 +59,8 @@ public class AddATudeErrorTest {
     public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 error \r\n".getBytes("ASCII")));
         
-        @SuppressWarnings({ "static-access", "unused" })
-        AddATudeMessage b=a.decode(in);
+        @SuppressWarnings("unused")
+        AddATudeMessage b=AddATudeMessage.decode(in);
 
     }
 
@@ -73,12 +71,12 @@ public class AddATudeErrorTest {
      * @throws UnsupportedEncodingException - unsupported encoding exception
      * 
      * */
-    @Test (expected = AddATudeException.class)
+    @Test (expected = EOFException.class)
     public void testInvalidErrorMsg() throws UnsupportedEncodingException, EOFException, AddATudeException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 errr\r\n".getBytes("ASCII")));
         
-        @SuppressWarnings({ "static-access", "unused" })
-        AddATudeMessage b=a.decode(in);
+        @SuppressWarnings("unused")
+        AddATudeMessage b=AddATudeMessage.decode(in);
 
     }
     /**
@@ -91,8 +89,8 @@ public class AddATudeErrorTest {
     @Test          
     public void testGetErrorMsg() throws EOFException, AddATudeException, UnsupportedEncodingException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 error\r\n".getBytes("ASCII")));
-        @SuppressWarnings({ "static-access" })
-        AddATudeMessage b=a.decode(in);
+
+        AddATudeMessage b=AddATudeMessage.decode(in);
         assertEquals("error", ((AddATudeError)b).getErrorMessage());
 
     }
@@ -106,8 +104,7 @@ public class AddATudeErrorTest {
     @Test (expected = AddATudeException.class)
     public void testSetErrorMessage() throws AddATudeException, EOFException, UnsupportedEncodingException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 error\r\n".getBytes("ASCII")));
-        @SuppressWarnings({ "static-access" })
-        AddATudeMessage b=a.decode(in);
+        AddATudeMessage b=AddATudeMessage.decode(in);
         ((AddATudeError)b).setErrorMessage(null);
 
     }

@@ -250,13 +250,16 @@ public class LocationRecord {
      * */
     
     public LocationRecord(Scanner in, PrintStream out) throws AddATudeException{
-        int aId;
         String aString;
         
         out.print("User Id>"); 
-        aId=in.nextInt();
-        checkId(aId);
-        userId=aId;
+        aString=in.next();
+        if(!aString.matches(CHECK2)) {
+            throw new AddATudeException("Invalid id.");
+        }
+        
+        checkId(Integer.valueOf(aString));
+        userId=Integer.valueOf(aString);
         
         out.print("Longitude>"); 
         aString=in.next();
