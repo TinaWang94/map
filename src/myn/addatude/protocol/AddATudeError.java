@@ -28,6 +28,7 @@ public class AddATudeError extends AddATudeMessage{
     /* variable errorMessage for error message*/
     private String errorMessage;
     private final String operation="ERROR";
+    private final String errorMSG="Invalid Error message";
 
     /**
      * check the valiation of error message
@@ -37,7 +38,7 @@ public class AddATudeError extends AddATudeMessage{
      * */
     private void checkErrorMsg(String msg) throws AddATudeException {
         if(msg == null) {
-            throw new AddATudeException ("Error message shouldn't be null");
+            throw new AddATudeException (errorMSG);
         }
     }
     /**
@@ -64,14 +65,13 @@ public class AddATudeError extends AddATudeMessage{
      * @throws AddATudeException - if serialization output fails
      * */
     @Override
-    public void encode(MessageOutput out) throws AddATudeException {
+    public void encodeH(MessageOutput out) throws AddATudeException {
         // TODO Auto-generated method stub
         StringBuffer aBuf = new StringBuffer();
-        aBuf.append(HEADER+" ");
-        aBuf.append(mapId+" ");
+
         aBuf.append(operation+" ");
         aBuf.append(errorMessage.length()+" ");
-        aBuf.append(errorMessage+EOLN);
+        aBuf.append(errorMessage);
         String aString = new String(aBuf);
         checkShortMsg(out,aString);
         
@@ -92,8 +92,8 @@ public class AddATudeError extends AddATudeMessage{
         
         //get message (this message should be a string)
         aString = in.readToSpace();
-        if(!aString.matches(CHECK2)) {
-            throw new AddATudeException("Length of error message doesn't match the given format.");
+        if(!aString.matches(CHECKID)) {
+            throw new AddATudeException(errorMSG);
         }
         length = Integer.valueOf(aString);
         

@@ -45,14 +45,13 @@ public class AddATudeLocationRequest extends AddATudeMessage {
      * @throws AddATudeException - if serialization output fails
      * */
     @Override
-    public void encode(MessageOutput out) throws AddATudeException {
+    public void encodeH(MessageOutput out) throws AddATudeException {
         StringBuffer aBuf = new StringBuffer();
-        aBuf.append(HEADER+" ");
-        aBuf.append(mapId+" ");
+
         aBuf.append(operation+" ");
-        aBuf.append(EOLN);
         String aString = new String(aBuf);
         checkShortMsg(out,aString);
+
     }
     /**
      * AddATudeError decode the request part

@@ -33,7 +33,8 @@ public class AddATudeLocationResponse extends AddATudeMessage{
     private String mapName;
     /*operation name, should be "response" in this class*/
     private final String operation="RESPONSE";
-    
+    private final String errorMap="Invalid map name.";
+    private final String errorLocRec="Invalid LocationRecord list.";
     /**
      * check valiation of mapName
      * @param aName - map name waits for check
@@ -41,7 +42,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
      */
     private void checkMapName(String aName) throws AddATudeException {
         if(aName == null) {
-            throw new AddATudeException("Name of map shouldn't be null");
+            throw new AddATudeException(errorMap);
         } 
     }
     
@@ -69,12 +70,11 @@ public class AddATudeLocationResponse extends AddATudeMessage{
      * @throws AddATudeException - if serialization output fails
      * */
     @Override
-    public void encode(MessageOutput out) throws AddATudeException {
+    public void encodeH(MessageOutput out) throws AddATudeException {
         // TODO Auto-generated method stub
         
         StringBuffer aBuf = new StringBuffer();
-        aBuf.append(HEADER+" ");
-        aBuf.append(mapId+" ");
+
         aBuf.append(operation+" ");
         aBuf.append(mapName.length()+" ");
         aBuf.append(mapName);
@@ -87,8 +87,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
             x.encode(out);
         }
         
-        aString=EOLN;
-        checkShortMsg(out,aString);
+        
     }
     
     /**
@@ -108,8 +107,8 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         //get map name
         //i)get length of map name 
         aString = in.readToSpace();
-        if(!aString.matches(CHECK2)) {
-            throw new AddATudeException("Length of map name doesn't match the given format.");
+        if(!aString.matches(CHECKID)) {
+            throw new AddATudeException(errorMap);
         }
         length = Integer.valueOf(aString);
         //ii)get the character list of the name
@@ -117,8 +116,8 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         
         //get the record num
         aString = in.readToSpace();
-        if(!aString.matches(CHECK2)) {
-            throw new AddATudeException("LocationRecord list's count doesn't match the given format.");
+        if(!aString.matches(CHECKID)) {
+            throw new AddATudeException(errorLocRec);
         }
         
         length = Integer.valueOf(aString);
@@ -176,7 +175,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
      */
     public void addLocationRecord (LocationRecord location) throws AddATudeException {
         if(location==null) {
-            throw new AddATudeException ("LocationRecord shouldn't be null");
+            throw new AddATudeException (errorLocRec);
         }
         lrNum++;
         lr.add(location);

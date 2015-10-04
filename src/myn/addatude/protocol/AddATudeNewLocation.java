@@ -28,6 +28,7 @@ public class AddATudeNewLocation extends AddATudeMessage {
 
     private LocationRecord location;
     private final String operation="NEW";
+    public final String errorLoc = "Invalid Locationrecord";
     
     /**
      * check valiation of location record
@@ -36,7 +37,7 @@ public class AddATudeNewLocation extends AddATudeMessage {
      */
     private void checkLocation(LocationRecord lr) throws AddATudeException {
         if(lr == null) {
-            throw new AddATudeException ("Location recoed should not be null.");
+            throw new AddATudeException (errorLoc);
         }
     }
     /**
@@ -74,17 +75,13 @@ public class AddATudeNewLocation extends AddATudeMessage {
      * @throws AddATudeException - if serialization output fails
      * */
     @Override
-    public void encode(MessageOutput out) throws AddATudeException {
+    public void encodeH(MessageOutput out) throws AddATudeException {
         StringBuffer aBuf = new StringBuffer();
-        aBuf.append(HEADER+" ");
-        aBuf.append(mapId+" ");
         aBuf.append(operation+" ");
         String aString = new String(aBuf);
         checkShortMsg(out,aString);
         location.encode(out);
-        aString=EOLN;
-        checkShortMsg(out,aString);
-        
+     
     }   
     
     /**

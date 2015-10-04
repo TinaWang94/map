@@ -25,13 +25,15 @@ import java.util.Scanner;
 public abstract class AddATudeMessage {
     /*initialize some constant strings for check purpose */
     public static final String HEADER="ADDATUDEv1";
-    public static final String CHECK = "^[-+]?[0-9]*\\.?[0-9]+$";
-    public static final String CHECK2 = "0|[1-9][0-9]*";
+    public static final String CHECKID = "0|[1-9][0-9]*";
     public static final String NEW = "NEW";
     public static final String EOLN = "\r\n";
     public static final String ALL = "ALL";
     public static final String ERROR = "ERROR";
     public static final String RESPONSE = "RESPONSE";
+    public static final String ERRORMSG = "Invalid Id.";
+    public static final String ERRORMSG2 = "Invalid operation.";
+    public static final String InvalidHeader = "Invalid header.";
     /*mapId for message */
     protected  int mapId;
     /**
@@ -41,7 +43,7 @@ public abstract class AddATudeMessage {
      * */
     protected void checkMapId(int mapId) throws AddATudeException {
         if(mapId < 0) {
-            throw new AddATudeException ("Invalid mapId.");
+            throw new AddATudeException (ERRORMSG);
         }
             
     }
@@ -87,15 +89,15 @@ public abstract class AddATudeMessage {
         
         aString = in.readToSpace();
         if(!HEADER.equals(aString) ) {
-            throw new AddATudeException("The format of header is incorrect");
+            throw new AddATudeException(InvalidHeader);
         }
         aString = in.readToSpace();
-        if(!aString.matches(CHECK2)) {
-            throw new AddATudeException("mapId doesn't match the given format.");
+        if(!aString.matches(CHECKID)) {
+            throw new AddATudeException(ERRORMSG);
         }
 
         if(Integer.valueOf(aString) < 0) {
-            throw new AddATudeException("mapId should be a non-nagative number.");
+            throw new AddATudeException(ERRORMSG);
         }
         int id=Integer.valueOf(aString);
         
@@ -115,7 +117,7 @@ public abstract class AddATudeMessage {
             a = new AddATudeLocationRequest(in,id);
             break;
         default:
-            throw new AddATudeException("Operation not found");
+            throw new AddATudeException(ERRORMSG2);
         } 
         
         in.readToEOLN();
@@ -156,13 +158,27 @@ public abstract class AddATudeMessage {
      * @param out - serialization output destination
      * @throws AddATudeException - if serialization output fails
      */
-    abstract public void encode(MessageOutput out) throws AddATudeException ;
+    public void encode(MessageOutput out) throws AddATudeException {
+        StringBuffer aBuf = new StringBuffer();
+        aBuf.append(HEADER+" ");
+        aBuf.append(mapId+" ");
+        String aString = new String(aBuf);
+        checkShortMsg(out,aString);
+        
+        encodeH(out);
+        
+        aString=EOLN;
+        checkShortMsg(out,aString);
+    }
     /**
      * abstract function declair toString function
      * may be overrided by children classes
      * 
      * @return Human readable string output
      * */
+    
+    abstract public void encodeH(MessageOutput out) throws AddATudeException ;
+    
     public String toString() {
         return null;
         

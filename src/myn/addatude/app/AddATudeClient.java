@@ -222,7 +222,7 @@ public class AddATudeClient {
      * 
      */
     private AddATudeMessage operationDecode () throws IOException {
-        AddATudeMessage decode=null;        
+        AddATudeMessage decode=null;  
         
         try {
             decode = AddATudeMessage.decode(in);
@@ -285,11 +285,9 @@ public class AddATudeClient {
         if((args.length <2) || (args.length >3)) {
             System.out.println("parameters: <Server> <Word> [<Port>]");
             System.exit(0);
-        }
+        }     
         
-        
-        try{
-            
+        try{        
             AddATudeClient client = new AddATudeClient(args[0],Integer.valueOf(args[1]));
             client.interactLoop();
         } catch(IOException e) {

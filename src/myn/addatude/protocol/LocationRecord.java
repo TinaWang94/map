@@ -29,8 +29,13 @@ import java.util.Scanner;
  * */
 
 public class LocationRecord {
-    public static final String CHECK = "^[-+]?[0-9]*\\.?[0-9]+$";
-    public static final String CHECK2 = "0|[1-9][0-9]*";
+    /*initial const value*/
+    public static final String CHECKSTR = "^[-+]?[0-9]*\\.?[0-9]+$";
+    public static final String CHECKID = "0|[1-9][0-9]*";
+    public static final String errorMsg = "Invalid Id.";
+    public static final String errorMsg2 = "Invalid longitude/latitude.";
+    public static final String errorMsg3 = "Invalid location name/description.";
+    public static final String errorMsg4 = "Invalid location record.";
     /*user id, int type*/
     private int userId;
     /*longtitude, string type*/
@@ -49,7 +54,7 @@ public class LocationRecord {
      */
     private void checkId( int id) throws AddATudeException {
         if(id < 0) {
-            throw new AddATudeException("userId should be a non-nagative number.");
+            throw new AddATudeException(errorMsg);
         }
     }
     
@@ -60,10 +65,10 @@ public class LocationRecord {
      */
     private void checkLongitude(String aLongitude) throws AddATudeException {
         if(aLongitude == null) {
-            throw new AddATudeException("Longitude shouldn't be null.");
+            throw new AddATudeException(errorMsg2);
         }
-        if(!aLongitude.matches(CHECK)) {
-            throw new AddATudeException("Longitude doesn't match the given format.");
+        if(!aLongitude.matches(CHECKSTR)) {
+            throw new AddATudeException(errorMsg2);
         }
     }
     
@@ -74,10 +79,10 @@ public class LocationRecord {
      */
     private void checkLatitude(String aLatitude) throws AddATudeException {
         if(aLatitude == null) {
-            throw new AddATudeException("Longitude shouldn't be null.");
+            throw new AddATudeException(errorMsg2);
         }
-        if(!aLatitude.matches(CHECK)) {
-            throw new AddATudeException("Longitude doesn't match the given format.");
+        if(!aLatitude.matches(CHECKSTR)) {
+            throw new AddATudeException(errorMsg2);
         }
     }
     /**
@@ -87,7 +92,7 @@ public class LocationRecord {
      */
     private void checkLocationName(String aLocationName) throws AddATudeException {
         if(aLocationName == null) {
-            throw new AddATudeException("Location name shouldn't be null.");
+            throw new AddATudeException(errorMsg3);
         }
     }
     /**
@@ -97,7 +102,7 @@ public class LocationRecord {
      */
     private void checkLocationDescription(String aLocationDescription) throws AddATudeException{
         if(aLocationDescription == null) {
-            throw new AddATudeException("Location Description shouldn't be null.");
+            throw new AddATudeException(errorMsg3);
         }
     }
     /**
@@ -161,7 +166,7 @@ public class LocationRecord {
         length=parse(count,aString,length);
         
         if(count < 7) {
-            throw new EOFException("This location record needs more information.");
+            throw new EOFException(errorMsg4);
         }
             
 
@@ -185,8 +190,8 @@ public class LocationRecord {
             /*get userId in the first consition*/
             case 1: 
                 
-                if(!aString.matches(CHECK2)) {
-                    throw new AddATudeException("userId doesn't match the given format.");
+                if(!aString.matches(CHECKID)) {
+                    throw new AddATudeException(errorMsg);
                 }
                 checkId(Integer.valueOf(aString));
                 userId = Integer.valueOf(aString);
@@ -207,8 +212,8 @@ public class LocationRecord {
             /*get the character count for laocation name by returing its value
               it should be used in next situation*/
             case 4:
-                if(!aString.matches(CHECK2)) {
-                    throw new AddATudeException("Length of longitude doesn't match the given format.");
+                if(!aString.matches(CHECKID)) {
+                    throw new AddATudeException(errorMsg2);
                 }
                 res = Integer.valueOf(aString);
                 break;
@@ -220,15 +225,15 @@ public class LocationRecord {
             /*and the character count for the location description
              the count is returned and should be used in next situation*/
             case 6:
-                if(!aString.matches(CHECK2)) {
-                    throw new AddATudeException("Length of latitude doesn't match the given format.");
+                if(!aString.matches(CHECKID)) {
+                    throw new AddATudeException(errorMsg2);
                 }
                 res = Integer.valueOf(aString);
                 break;
             /*get location description*/
             case 7:
                 if(length != aString.length()) {
-                    throw new AddATudeException("Character count doesn't match the description.");
+                    throw new AddATudeException(errorMsg3);
                 }
                 locationDescription = aString;
                 
@@ -236,7 +241,7 @@ public class LocationRecord {
                 break;
             /*default situation, return a irrelative number*/
             default:
-                throw new AddATudeException("The format of this location record is wrong.");
+                throw new AddATudeException(errorMsg4);
         }
         return res;
     }
@@ -254,8 +259,8 @@ public class LocationRecord {
         
         out.print("User Id>"); 
         aString=in.next();
-        if(!aString.matches(CHECK2)) {
-            throw new AddATudeException("Invalid id.");
+        if(!aString.matches(CHECKID)) {
+            throw new AddATudeException(errorMsg);
         }
         
         checkId(Integer.valueOf(aString));
