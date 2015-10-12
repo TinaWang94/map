@@ -22,6 +22,7 @@ import myn.addatude.protocol.AddATudeException;
 import myn.addatude.protocol.AddATudeLocationRequest;
 import myn.addatude.protocol.AddATudeMessage;
 import myn.addatude.protocol.AddATudeNewLocation;
+import myn.addatude.protocol.ConstantVariable;
 import myn.addatude.protocol.LocationRecord;
 import myn.addatude.protocol.MessageInput;
 import myn.addatude.protocol.MessageOutput;
@@ -35,14 +36,7 @@ import myn.addatude.protocol.MessageOutput;
  * */
 
 public class AddATudeClient {
-    /*initialize some local strings for checking valiation purpose*/
-    private final String ALL="ALL";
-    private final String NEW="NEW";
-    private final String RESPONSE="RESPONSE";
-    private final String ERROR="ERROR";
-    public static final String CHECK2 = "0|[1-9][0-9]*";
-    private final String EOLN="\r\n";
-    
+
     /**
      * check if a integer is unsigned or not
      * @param aInt - a interger waiting for check
@@ -60,7 +54,7 @@ public class AddATudeClient {
      * @throws AddATudeException - is thrown if the id is invalid
      */
     private void checkInt2(String a) throws AddATudeException {
-        if(!a.matches(CHECK2)) {
+        if(!a.matches(ConstantVariable.CHECKID)) {
             throw new AddATudeException("mapId doesn't match the given format.");
         }
     }
@@ -143,15 +137,15 @@ public class AddATudeClient {
      */
     public void interactLoop() throws AddATudeException, IOException {
         Scanner keyboard = new Scanner(System.in);
-        keyboard.useDelimiter(EOLN);
+        keyboard.useDelimiter(ConstantVariable.EOLN);
         while(true) {
             System.out.print("Operation>");
             String operation = keyboard.next();
             switch(operation) {
-                case ALL:
+                case ConstantVariable.ALL:
                     operationAll(keyboard);
                     break;
-                case NEW:
+                case ConstantVariable.NEW: 
                     operationNew(keyboard);
                     break;
                 default:
@@ -159,6 +153,11 @@ public class AddATudeClient {
                     break;
                     
             }
+            
+            if(!socket.isConnected()) {
+                break;
+            }
+                       
             System.out.print("Continue (y/n)>");
             String judge = keyboard.next();
             if("n".equals(judge) || "N".equals(judge)) {
@@ -171,6 +170,7 @@ public class AddATudeClient {
                     judge = keyboard.next();
                 }
             }
+            
         }
         
     }
@@ -206,7 +206,8 @@ public class AddATudeClient {
         request.encode(out);
         
         AddATudeMessage decode=operationDecode();
-        if(!(RESPONSE.equals(decode.getOperation()) || ERROR.equals(decode.getOperation()))) {
+        if(!(ConstantVariable.RESPONSE.equals(decode.getOperation()) 
+                || ConstantVariable.ERROR.equals(decode.getOperation()))) {
             System.out.println("Unexpected message: "+decode.getOperation());
             return;
         }
@@ -266,7 +267,8 @@ public class AddATudeClient {
 
         newLocation.encode(out);
         AddATudeMessage decode=operationDecode();
-        if(!(RESPONSE.equals(decode.getOperation()) || ERROR.equals(decode.getOperation()))) {
+        if(!(ConstantVariable.RESPONSE.equals(decode.getOperation()) 
+                || ConstantVariable.ERROR.equals(decode.getOperation()))) {
             System.out.println("Unexpected message: "+decode.getOperation());
             return;
         }

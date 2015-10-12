@@ -306,7 +306,7 @@ public class LocationRecord {
         aBuf.append(" "+locationDescription); 
         String aString = new String(aBuf);
         try {
-            out.write(aString.getBytes());
+            out.write(aString.getBytes("UTF-8"));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             throw new AddATudeException("serialization output fails");
@@ -330,12 +330,18 @@ public class LocationRecord {
         if(obj == this) {
             return true;
         }
-        return Objects.equals(((LocationRecord)obj).getUserId(), getUserId())
+        return ((LocationRecord)obj).userId == userId 
+                &&  ((LocationRecord)obj).latitude.compareTo(latitude) == 0
+                && ((LocationRecord)obj).longitude.compareTo(longitude) == 0
+                && ((LocationRecord)obj).locationName.compareTo(locationName) == 0
+                && ((LocationRecord)obj).locationDescription.compareTo(locationDescription) == 0;
+                /*
+                Objects.equals(((LocationRecord)obj).getUserId(), getUserId())
                 && Objects.equals(((LocationRecord)obj).getLatitude(), getLatitude())
                 && Objects.equals(((LocationRecord)obj).getLongitude(),getLongitude())
                 && Objects.equals(((LocationRecord)obj).getLocationName(), getLocationName())
                 && Objects.equals(((LocationRecord)obj).getLocationDescription()
-                        , getLocationDescription());
+                        , getLocationDescription());*/
     }
     
     /**

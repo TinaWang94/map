@@ -107,5 +107,15 @@ public class AddATudeNewLocationTest {
 
     }
 
+    @Test 
+    public void testEquals() throws AddATudeException, EOFException, UnsupportedEncodingException {
+        MessageInput in = new MessageInput(new ByteArrayInputStream
+                ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
+        @SuppressWarnings({ "static-access" })
+        AddATudeMessage b=a.decode(in);
+        assertEquals(true, 
+                ((AddATudeNewLocation)b).equals(b));
+
+    }
 
 }

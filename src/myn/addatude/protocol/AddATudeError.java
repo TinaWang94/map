@@ -14,6 +14,7 @@
 package myn.addatude.protocol;
 
 import java.io.EOFException;
+import java.util.Objects;
 /**
  * 
  *  This class extends the message class
@@ -65,7 +66,7 @@ public class AddATudeError extends AddATudeMessage{
      * @throws AddATudeException - if serialization output fails
      * */
     @Override
-    public void encodeH(MessageOutput out) throws AddATudeException {
+    public void encodeHelp(MessageOutput out) throws AddATudeException {
         // TODO Auto-generated method stub
         StringBuffer aBuf = new StringBuffer();
 
@@ -92,7 +93,7 @@ public class AddATudeError extends AddATudeMessage{
         
         //get message (this message should be a string)
         aString = in.readToSpace();
-        if(!aString.matches(CHECKID)) {
+        if(!aString.matches(ConstantVariable.CHECKID)) {
             throw new AddATudeException(errorMSG);
         }
         length = Integer.valueOf(aString);
@@ -128,6 +129,7 @@ public class AddATudeError extends AddATudeMessage{
         StringBuffer result = new StringBuffer();
         
         result.append("Error: "+errorMessage);
+        
         return result.toString();
     }
     
@@ -141,4 +143,21 @@ public class AddATudeError extends AddATudeMessage{
         return operation;
     }
 
+    @Override
+    public boolean equals(Object obj){
+        if( !(obj instanceof AddATudeError) ) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+        
+        return ((AddATudeError)obj).errorMessage.compareTo(errorMessage) == 0 
+                && ((AddATudeError)obj).mapId == mapId;
+    }
+    
+    @Override
+    public int hashCode(){
+        return Objects.hash(mapId, errorMessage);
+    }
 }

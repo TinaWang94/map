@@ -25,12 +25,6 @@ import java.util.Scanner;
 public abstract class AddATudeMessage {
     /*initialize some constant strings for check purpose */
     public static final String HEADER="ADDATUDEv1";
-    public static final String CHECKID = "0|[1-9][0-9]*";
-    public static final String NEW = "NEW";
-    public static final String EOLN = "\r\n";
-    public static final String ALL = "ALL";
-    public static final String ERROR = "ERROR";
-    public static final String RESPONSE = "RESPONSE";
     public static final String ERRORMSG = "Invalid Id.";
     public static final String ERRORMSG2 = "Invalid operation.";
     public static final String InvalidHeader = "Invalid header.";
@@ -55,7 +49,7 @@ public abstract class AddATudeMessage {
      * */
     protected void checkShortMsg(MessageOutput out, String aString) throws AddATudeException {
         try {
-            out.write(aString.getBytes());
+            out.write(aString.getBytes("UTF-8"));
         } catch (IOException e) {
             
             throw new AddATudeException ("serialization output fails");
@@ -92,7 +86,7 @@ public abstract class AddATudeMessage {
             throw new AddATudeException(InvalidHeader);
         }
         aString = in.readToSpace();
-        if(!aString.matches(CHECKID)) {
+        if(!aString.matches(ConstantVariable.CHECKID)) {
             throw new AddATudeException(ERRORMSG);
         }
 
@@ -104,16 +98,16 @@ public abstract class AddATudeMessage {
         String operation = in.readOperation();
         AddATudeMessage a;
         switch(operation) {
-        case NEW:
+        case ConstantVariable.NEW:
             a = new AddATudeNewLocation(in,id); 
             break;
-        case ERROR:
+        case ConstantVariable.ERROR:
             a=new AddATudeError(in,id);
             break;
-        case RESPONSE:
+        case ConstantVariable.RESPONSE:
             a = new AddATudeLocationResponse(in,id);
             break;
-        case ALL:
+        case ConstantVariable.ALL:
             a = new AddATudeLocationRequest(in,id);
             break;
         default:
@@ -165,9 +159,9 @@ public abstract class AddATudeMessage {
         String aString = new String(aBuf);
         checkShortMsg(out,aString);
         
-        encodeH(out);
+        encodeHelp(out);
         
-        aString=EOLN;
+        aString=ConstantVariable.EOLN;
         checkShortMsg(out,aString);
     }
     /**
@@ -177,7 +171,7 @@ public abstract class AddATudeMessage {
      * @return Human readable string output
      * */
     
-    abstract public void encodeH(MessageOutput out) throws AddATudeException ;
+    abstract public void encodeHelp(MessageOutput out) throws AddATudeException ;
     
     public String toString() {
         return null;
@@ -189,4 +183,9 @@ public abstract class AddATudeMessage {
      * 
      * */
     abstract public String getOperation();
+    
+    /**
+     * override hashCode in class java.lang.Object
+     * 
+     * */
 }

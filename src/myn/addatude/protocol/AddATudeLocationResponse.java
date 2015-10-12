@@ -16,6 +16,7 @@ package myn.addatude.protocol;
 import java.io.EOFException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 /**
  * Purpose:
  * Represents an AddATude location response message
@@ -61,7 +62,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         checkMapName(mapName);  
         this.mapName=mapName;       
     }
-
+   
     /**
      * override encode function in class AddATudeMessage
      * 
@@ -70,7 +71,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
      * @throws AddATudeException - if serialization output fails
      * */
     @Override
-    public void encodeH(MessageOutput out) throws AddATudeException {
+    public void encodeHelp(MessageOutput out) throws AddATudeException {
         // TODO Auto-generated method stub
         
         StringBuffer aBuf = new StringBuffer();
@@ -107,7 +108,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         //get map name
         //i)get length of map name 
         aString = in.readToSpace();
-        if(!aString.matches(CHECKID)) {
+        if(!aString.matches(ConstantVariable.CHECKID)) {
             throw new AddATudeException(errorMap);
         }
         length = Integer.valueOf(aString);
@@ -116,7 +117,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         
         //get the record num
         aString = in.readToSpace();
-        if(!aString.matches(CHECKID)) {
+        if(!aString.matches(ConstantVariable.CHECKID)) {
             throw new AddATudeException(errorLocRec);
         }
         
@@ -180,6 +181,10 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         lrNum++;
         lr.add(location);
      }
+    
+     public void setLocationRecordList(List<LocationRecord> lr) {
+         this.lr=lr;
+     }
      
     /**
      * override getOperation function from parent class
@@ -202,7 +207,7 @@ public class AddATudeLocationResponse extends AddATudeMessage{
          StringBuffer result = new StringBuffer();
         
          result.append("mapId="+mapId+" - "); 
-         result.append(mapName+EOLN);
+         result.append(mapName+ConstantVariable.EOLN);
          
          for(int i=0;i<lrNum;i++) {
              
@@ -211,4 +216,29 @@ public class AddATudeLocationResponse extends AddATudeMessage{
          return result.toString();
      }
     
+     @Override
+     public int hashCode(){
+         return Objects.hash(mapId, lrNum, mapName, lr);
+     }
+     
+     @Override
+     public boolean equals(Object obj){
+         if( !(obj instanceof AddATudeLocationResponse) ) {
+             return false;
+         }
+         if(obj == this) {
+             return true;
+         }
+         AddATudeLocationResponse newObj =  ((AddATudeLocationResponse)obj);
+         if(newObj.mapId != mapId)
+             return false;
+         if(newObj.lrNum != lrNum)
+             return false;
+         if(newObj.mapName.compareTo(mapName) != 0)
+             return false;
+         for(int i = 0; i < lrNum; i++)
+             if(!newObj.lr.get(i).equals(lr.get(i)))
+                 return false;
+         return true;
+     }
 }

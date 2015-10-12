@@ -17,6 +17,7 @@
 package myn.addatude.protocol;
 
 import java.io.EOFException;
+import java.util.Objects;
 
 
 /**
@@ -75,7 +76,7 @@ public class AddATudeNewLocation extends AddATudeMessage {
      * @throws AddATudeException - if serialization output fails
      * */
     @Override
-    public void encodeH(MessageOutput out) throws AddATudeException {
+    public void encodeHelp(MessageOutput out) throws AddATudeException {
         StringBuffer aBuf = new StringBuffer();
         aBuf.append(operation+" ");
         String aString = new String(aBuf);
@@ -125,4 +126,38 @@ public class AddATudeNewLocation extends AddATudeMessage {
         result.append("new LocationRecord="+location.toString());
         return result.toString();
     }
+
+    /**
+     * override hashCode in class java.lang.Object
+     * 
+     * */
+    @Override
+    public int hashCode() {
+        
+        return Objects.hash(mapId,location);
+    }
+    /**
+     * override equals in class java.lang.Object
+     * 
+     * @param obj - an object
+     * @return true if matchs, false otherwise
+     * 
+     * */
+    @Override
+    public boolean equals(Object obj) {
+        if( !(obj instanceof AddATudeNewLocation) ) {
+            return false;
+        }
+        
+        if(obj == this) {
+            return true;
+        }
+        AddATudeNewLocation newObj =  ((AddATudeNewLocation)obj);
+        if(newObj.mapId != mapId)
+            return false;
+        if(!newObj.location.equals(location) )
+            return false;
+        return true;
+    }
+
 }

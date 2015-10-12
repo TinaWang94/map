@@ -45,7 +45,7 @@ public class AddATudeLocationRequest extends AddATudeMessage {
      * @throws AddATudeException - if serialization output fails
      * */
     @Override
-    public void encodeH(MessageOutput out) throws AddATudeException {
+    public void encodeHelp(MessageOutput out) throws AddATudeException {
         StringBuffer aBuf = new StringBuffer();
 
         aBuf.append(operation+" ");
