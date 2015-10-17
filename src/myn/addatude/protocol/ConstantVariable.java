@@ -8,5 +8,6 @@ public class ConstantVariable {
     public static final String ERROR="ERROR";
     public static final String CHECKID = "0|[1-9][0-9]*";
     public static final String EOLN="\r\n";
+    public static final String HEADER="ADDATUDEv1";
     
 }

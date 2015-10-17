@@ -16,6 +16,7 @@ package myn.addatude.protocol;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.SocketException;
 import java.util.Scanner;
 
 /**
@@ -24,12 +25,12 @@ import java.util.Scanner;
  * */
 public abstract class AddATudeMessage {
     /*initialize some constant strings for check purpose */
-    public static final String HEADER="ADDATUDEv1";
     public static final String ERRORMSG = "Invalid Id.";
     public static final String ERRORMSG2 = "Invalid operation.";
     public static final String InvalidHeader = "Invalid header.";
     /*mapId for message */
-    protected  int mapId;
+    protected int mapId;
+    protected static String version;
     /**
      * check valiation for mapId
      * @param mapId - a mapId waits for check
@@ -77,14 +78,17 @@ public abstract class AddATudeMessage {
      * @return a - a specific AddATude message resulting from deserialization
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
+     * @throws SocketException - connection error
      */
-    static public AddATudeMessage decode(MessageInput in) throws AddATudeException, EOFException{
+    static public AddATudeMessage decode(MessageInput in) throws AddATudeException, EOFException, SocketException{
         String aString = null;
         
         aString = in.readToSpace();
-        if(!HEADER.equals(aString) ) {
+        version=aString;
+        if(!ConstantVariable.HEADER.equals(aString) ) {
             throw new AddATudeException(InvalidHeader);
         }
+        
         aString = in.readToSpace();
         if(!aString.matches(ConstantVariable.CHECKID)) {
             throw new AddATudeException(ERRORMSG);
@@ -129,6 +133,11 @@ public abstract class AddATudeMessage {
         return mapId;
     }
     
+    public String getVersion () {
+        return version;
+    }
+    
+    
     /**
      * Sets map ID
      * 
@@ -154,7 +163,7 @@ public abstract class AddATudeMessage {
      */
     public void encode(MessageOutput out) throws AddATudeException {
         StringBuffer aBuf = new StringBuffer();
-        aBuf.append(HEADER+" ");
+        aBuf.append(ConstantVariable.HEADER+" ");
         aBuf.append(mapId+" ");
         String aString = new String(aBuf);
         checkShortMsg(out,aString);
@@ -167,7 +176,7 @@ public abstract class AddATudeMessage {
     /**
      * abstract function declair toString function
      * may be overrided by children classes
-     * 
+     * @param out- messageOutput Stream
      * @return Human readable string output
      * */
     

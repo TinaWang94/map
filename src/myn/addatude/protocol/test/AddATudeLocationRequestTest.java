@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 
 import myn.addatude.protocol.AddATudeException;
 import myn.addatude.protocol.AddATudeLocationRequest;
@@ -39,10 +40,11 @@ public class AddATudeLocationRequestTest {
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
      * 
      * */
     @Test
-    public void testDecode() throws EOFException, AddATudeException, UnsupportedEncodingException {
+    public void testDecode() throws EOFException, AddATudeException, UnsupportedEncodingException, SocketException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ALL \r\n".getBytes("ASCII")));
         
         @SuppressWarnings("static-access")
@@ -55,10 +57,11 @@ public class AddATudeLocationRequestTest {
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException  - connection error
      * 
      * */
     @Test (expected = AddATudeException.class)
-    public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException {
+    public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ALL  \r\n".getBytes("ASCII")));
         
         @SuppressWarnings({ "static-access", "unused" })

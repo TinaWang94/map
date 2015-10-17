@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 
 import myn.addatude.protocol.AddATudeException;
 import myn.addatude.protocol.AddATudeMessage;
@@ -59,11 +60,12 @@ public class AddATudeNewLocationTest {
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
      * 
      * */
     
     @Test (expected = AddATudeException.class)
-    public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException {
+    public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
         MessageInput in = new MessageInput(new ByteArrayInputStream
                 ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor \r\n".getBytes("ASCII")));
         
@@ -78,9 +80,10 @@ public class AddATudeNewLocationTest {
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
      * */
     @Test (expected = AddATudeException.class)
-    public void testSetLocationRecord() throws AddATudeException, EOFException, UnsupportedEncodingException {
+    public void testSetLocationRecord() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
         MessageInput in = new MessageInput(new ByteArrayInputStream
                 ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })
@@ -94,10 +97,11 @@ public class AddATudeNewLocationTest {
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
      * 
      * */
     @Test 
-    public void testGetLocationRecord() throws AddATudeException, EOFException, UnsupportedEncodingException {
+    public void testGetLocationRecord() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
         MessageInput in = new MessageInput(new ByteArrayInputStream
                 ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })
@@ -107,8 +111,15 @@ public class AddATudeNewLocationTest {
 
     }
 
+    /**
+     * test equals function
+     * @throws AddATudeException - if deserialization or validation failure
+     * @throws EOFException - if premature end of stream
+     * @throws UnsupportedEncodingException - unsupported
+     * @throws SocketException - connection error
+     */
     @Test 
-    public void testEquals() throws AddATudeException, EOFException, UnsupportedEncodingException {
+    public void testEquals() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
         MessageInput in = new MessageInput(new ByteArrayInputStream
                 ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })

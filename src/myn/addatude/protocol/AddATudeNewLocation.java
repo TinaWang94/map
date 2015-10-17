@@ -17,6 +17,7 @@
 package myn.addatude.protocol;
 
 import java.io.EOFException;
+import java.net.SocketException;
 import java.util.Objects;
 
 
@@ -61,8 +62,9 @@ public class AddATudeNewLocation extends AddATudeMessage {
      * @param mapId - ID for message map
      * @throws AddATudeException - if validation fails
      * @throws EOFException - if premature end of stream
+     * @throws SocketException - connection error
      */
-    public  AddATudeNewLocation(MessageInput in,int mapId ) throws AddATudeException, EOFException {
+    public  AddATudeNewLocation(MessageInput in,int mapId ) throws AddATudeException, EOFException, SocketException {
         checkMapId(mapId);
         this.mapId=mapId;
         

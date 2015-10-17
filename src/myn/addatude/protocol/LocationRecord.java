@@ -14,6 +14,7 @@ package myn.addatude.protocol;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.SocketException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -140,10 +141,11 @@ public class LocationRecord {
      * 
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
+     * @throws SocketException - connection error
      * 
      * */
     
-    public LocationRecord(MessageInput in) throws AddATudeException,EOFException{    
+    public LocationRecord(MessageInput in) throws AddATudeException,EOFException, SocketException{    
         /*count is the record for different situations*/
         int count = 1;
         /*used for read in location name and description*/
@@ -335,13 +337,7 @@ public class LocationRecord {
                 && ((LocationRecord)obj).longitude.compareTo(longitude) == 0
                 && ((LocationRecord)obj).locationName.compareTo(locationName) == 0
                 && ((LocationRecord)obj).locationDescription.compareTo(locationDescription) == 0;
-                /*
-                Objects.equals(((LocationRecord)obj).getUserId(), getUserId())
-                && Objects.equals(((LocationRecord)obj).getLatitude(), getLatitude())
-                && Objects.equals(((LocationRecord)obj).getLongitude(),getLongitude())
-                && Objects.equals(((LocationRecord)obj).getLocationName(), getLocationName())
-                && Objects.equals(((LocationRecord)obj).getLocationDescription()
-                        , getLocationDescription());*/
+
     }
     
     /**

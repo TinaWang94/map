@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 
 import myn.addatude.protocol.AddATudeException;
 import myn.addatude.protocol.AddATudeMessage;
@@ -99,9 +100,10 @@ public class AddATudeMessageTest {
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
      */
     @Test (expected = EOFException.class)
-    public void testEoF() throws AddATudeException, EOFException, UnsupportedEncodingException {
+    public void testEoF() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 AL".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })
         AddATudeMessage b=a.decode(in);
@@ -117,9 +119,10 @@ public class AddATudeMessageTest {
      * @throws AddATudeException - if deserialization or validation failure
      * @throws EOFException - if premature end of stream
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
      */
     @Test (expected = EOFException.class)
-    public void testShort() throws AddATudeException, EOFException, UnsupportedEncodingException {
+    public void testShort() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDA".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })
         AddATudeMessage b=a.decode(in);

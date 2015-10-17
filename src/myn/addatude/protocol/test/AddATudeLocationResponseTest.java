@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 import java.util.List;
 
 import myn.addatude.protocol.AddATudeException;
@@ -59,10 +60,11 @@ public class AddATudeLocationResponseTest {
       * @throws AddATudeException - if deserialization or validation failure
       * @throws EOFException - if premature end of stream
       * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
       * 
       * */
      @Test (expected = AddATudeException.class)
-     public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException {
+     public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor \r\n".getBytes("ASCII")));
          
@@ -75,9 +77,10 @@ public class AddATudeLocationResponseTest {
       * @throws AddATudeException - if deserialization or validation failure
       * @throws EOFException - if premature end of stream
       * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
       * */
      @Test 
-     public void testAddLocationRecord() throws UnsupportedEncodingException, EOFException, AddATudeException {
+     public void testAddLocationRecord() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
          
@@ -96,9 +99,10 @@ public class AddATudeLocationResponseTest {
       * @throws AddATudeException - if deserialization or validation failure
       * @throws EOFException - if premature end of stream
       * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
       * */
      @Test 
-     public void testSetMapName() throws UnsupportedEncodingException, EOFException, AddATudeException {
+     public void testSetMapName() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
          
@@ -115,9 +119,10 @@ public class AddATudeLocationResponseTest {
       * @throws AddATudeException - if deserialization or validation failure
       * @throws EOFException - if premature end of stream
       * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
       * */
      @Test (expected = AddATudeException.class)
-     public void testSetMapNameNull() throws UnsupportedEncodingException, EOFException, AddATudeException {
+     public void testSetMapNameNull() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
          
@@ -132,9 +137,10 @@ public class AddATudeLocationResponseTest {
       * @throws AddATudeException - if deserialization or validation failure
       * @throws EOFException - if premature end of stream
       * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
       * */
      @Test 
-     public void testGetLocationRecordList() throws UnsupportedEncodingException, EOFException, AddATudeException {
+     public void testGetLocationRecordList() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU2 1 1.2 3.4 2 BU6 Baylor1 1.3 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
          

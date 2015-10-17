@@ -14,6 +14,7 @@
 package myn.addatude.protocol;
 
 import java.io.EOFException;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +59,6 @@ public class AddATudeLocationResponse extends AddATudeMessage{
         checkMapId(mapId);
         this.mapId=mapId;
         lr = new LinkedList<>();
-        // TODO Auto-generated constructor stub
         checkMapName(mapName);  
         this.mapName=mapName;       
     }
@@ -97,9 +97,10 @@ public class AddATudeLocationResponse extends AddATudeMessage{
      * @param mapId - mapId extends from parent class
      * @throws EOFException - end of file error 
      * @throws AddATudeException - invalid of length of error message
+     * @throws SocketException - connection error
      * 
      * */
-    public AddATudeLocationResponse(MessageInput in,int mapId) throws AddATudeException, EOFException {
+    public AddATudeLocationResponse(MessageInput in,int mapId) throws AddATudeException, EOFException, SocketException {
         String aString = null;
         checkMapId(mapId);
         this.mapId=mapId;

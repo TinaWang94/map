@@ -14,6 +14,7 @@
 package myn.addatude.protocol;
 
 import java.io.EOFException;
+import java.net.SocketException;
 import java.util.Objects;
 /**
  * 
@@ -83,9 +84,10 @@ public class AddATudeError extends AddATudeMessage{
      * @param mapId - mapId extends from parent class
      * @throws EOFException - end of file error 
      * @throws AddATudeException - invalid of length of error message
+     * @throws SocketException - connection error
      * 
      * */
-    public AddATudeError(MessageInput in,int mapId) throws EOFException, AddATudeException {
+    public AddATudeError(MessageInput in,int mapId) throws EOFException, AddATudeException, SocketException {
         String aString = null;
         checkMapId(mapId);
         this.mapId=mapId;

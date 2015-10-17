@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 
 import myn.addatude.protocol.AddATudeException;
 import myn.addatude.protocol.LocationRecord;
@@ -168,10 +169,11 @@ public class LocationRecordTest {
      * EOFException should be thrown
      * 
      * @throws EOFException - if premature end of stream 
+     * @throws SocketException - connection error
      * */
     
     @Test(expected = EOFException.class)
-    public void testConstructorException3() throws EOFException {
+    public void testConstructorException3() throws EOFException, SocketException {
         MessageInput in2 = null;
         try {
             in2 = new MessageInput(new ByteArrayInputStream("1 1.2 3.4 2 Bu4".getBytes("ASCII")));
@@ -198,11 +200,12 @@ public class LocationRecordTest {
      * @throws AddATudeException -  if validation failure
      * @throws EOFException - if premature end of stream 
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
      * */
     
     @Test(expected = AddATudeException.class)
     public void testSetLocationNameException() 
-            throws AddATudeException, UnsupportedEncodingException, EOFException {
+            throws AddATudeException, UnsupportedEncodingException, EOFException, SocketException {
         MessageInput in = new MessageInput
                 (new ByteArrayInputStream("1 1.2 3.4 2 BU6 Baylor".getBytes("ASCII")));
         LocationRecord lr2 = new LocationRecord(in);
@@ -221,10 +224,11 @@ public class LocationRecordTest {
      * @throws AddATudeException -  if validation failure
      * @throws EOFException - if premature end of stream 
      * @throws UnsupportedEncodingException - unsupported encoding exception
+     * @throws SocketException - connection error
      */
     
     @Test
-    public void testEqualsAndToString() throws EOFException, AddATudeException, UnsupportedEncodingException {
+    public void testEqualsAndToString() throws EOFException, AddATudeException, UnsupportedEncodingException, SocketException {
         
         MessageInput in = new MessageInput
                 (new ByteArrayInputStream("1 1.2 3.4 2 BU6 Baylor2 2.2 2.4 2 bu6 baylor".getBytes("ASCII")));

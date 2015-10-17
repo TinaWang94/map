@@ -212,6 +212,10 @@ public class AddATudeClient {
             return;
         }
         System.out.println(decode.toString());
+        if("Error: Server unavailable".equals(decode.toString())) {
+            System.exit(0);
+        }
+            
     }
     
     /**

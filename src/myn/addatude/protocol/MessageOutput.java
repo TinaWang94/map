@@ -24,7 +24,7 @@ import java.io.OutputStream;
 public class MessageOutput {
     /*treat MessageOutput as a mediator of a outputstream*/
     private OutputStream out;
-    
+    final String Uni = "UTF-8";
     /**
      * Constructs a new output source from an OutputStream
      * @param out- output source
@@ -44,7 +44,17 @@ public class MessageOutput {
     public void write(byte[] b) throws IOException {
         out.write(b);
     }
+    /**
+     * Writes String b 
+     * to this output stream.
+     * @param  b - the data.
+     * @throws IOException - if an I/O error occurs.
+     * */
     
+    public void write(String b) throws IOException {
+        
+        out.write(b.getBytes(Uni));
+    }
     /**
      * Writes len bytes from the specified byte array starting at
      * offset off to this output stream.

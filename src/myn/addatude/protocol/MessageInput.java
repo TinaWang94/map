@@ -15,6 +15,7 @@ package myn.addatude.protocol;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 
 /**
  * 
@@ -103,9 +104,9 @@ public class MessageInput {
      * @return aString-the result string after decoding
      * 
      * @throws EOFException - if premature end of stream
-     * 
+     * @throws SocketException - connection error
      * */
-    public  String readToSpace () throws EOFException  {
+    public  String readToSpace () throws EOFException, SocketException  {
         int bt = 0;
         StringBuffer aBuf = new StringBuffer();
         String aString = null;
@@ -123,7 +124,13 @@ public class MessageInput {
                 }  
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            
+            if(e instanceof SocketException) {
+                throw new SocketException("Connection error.");
+            }
+            else {
+                e.printStackTrace();
+            }
         }
         if(bt == -1) {
             throw new EOFException("This message needs more information.");
@@ -177,9 +184,10 @@ public class MessageInput {
      * 
      * @throws EOFException - if premature end of stream
      * @throws AddATudeException - invalid format
+     * @throws SocketException - connection error
      * 
      * */
-    public String readOperation() throws AddATudeException, EOFException{     
+    public String readOperation() throws AddATudeException, EOFException, SocketException{     
         String aString;
         aString = readToSpace();
         return aString;
