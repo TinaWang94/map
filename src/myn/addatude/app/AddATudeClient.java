@@ -36,6 +36,13 @@ import myn.addatude.protocol.MessageOutput;
  * */
 
 public class AddATudeClient {
+    
+    /*initial all needed variables*/
+    private int mapId;
+    private Socket socket;
+    private int userId;
+    private MessageInput in;
+    private MessageOutput out;
 
     /**
      * check if a integer is unsigned or not
@@ -68,14 +75,7 @@ public class AddATudeClient {
         System.out.println("Invalid user input: "+e.getMessage());
     }
     
-    /*initial all needed variables*/
-    private int mapId;
-    private Socket socket;
-    private int userId;
-    private MessageInput in;
-    private MessageOutput out;
-    
-    
+  
     /**
      * return mapId
      * @return mapId

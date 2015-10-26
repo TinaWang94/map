@@ -1,0 +1,1 @@
+java -cp bin;MapServicev1-1.jar myn.addatude.app.AddATudeServer 12345 2 password

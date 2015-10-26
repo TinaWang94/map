@@ -30,6 +30,7 @@ public class AddATudeLocationRequest extends AddATudeMessage {
     /**
      * Constructs location request using set values
      * @param mapId -  ID for message map
+     * 
      * @throws AddATudeException - if validation fails
      */
     public AddATudeLocationRequest(int mapId) throws AddATudeException {

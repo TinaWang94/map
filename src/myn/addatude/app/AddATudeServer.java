@@ -15,8 +15,9 @@ package myn.addatude.app;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -48,9 +49,12 @@ public class AddATudeServer extends Thread {
     /*Set useful constant value*/
     private final static int dividor = 255;
     private final static String del = ":";
+    private final static int TIMEOUT = 500000;
+    
     /*name of the location file for google map*/
+    
     // path may have to change to appropriate one
-    private static final String LOCATIONFILE = "Info windows_files\\markers.js";
+    private static final String LOCATIONFILE = "markers.js";
     /*name/version of the message*/
     public static final String InvalidHeader = "Invalid header.";
     /*name of the logger file*/
@@ -108,7 +112,7 @@ public class AddATudeServer extends Thread {
        
         try {
             fh=new FileHandler(LOGFILE,true);
-            fh.setEncoding("UTF-8");
+            fh.setEncoding(ConstantVariable.UNI);
             fh.setFormatter(new Formatter() {
                 
                 @Override
@@ -136,7 +140,8 @@ public class AddATudeServer extends Thread {
      */
     private static void readPassword(String filename) {
              
-        try(BufferedReader br = new BufferedReader(new FileReader(filename))) {
+        try(BufferedReader br = new BufferedReader(new InputStreamReader
+                (new FileInputStream(filename),ConstantVariable.UNI))) {
             String line = br.readLine();
             while(line != null) {
                 int pos = line.indexOf(del);
@@ -149,8 +154,8 @@ public class AddATudeServer extends Thread {
             }
             
         } catch (IOException e) {
-            //cannot fine the file
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.exit(0);
         }
         
     }
@@ -161,9 +166,11 @@ public class AddATudeServer extends Thread {
      * and message input/output
      * 
      * @param socket - socket to connect
+     * @throws SocketException - timeout
      */
-    public AddATudeServer(Socket socket) {
+    public AddATudeServer(Socket socket) throws SocketException {
         this.socket=socket;
+        socket.setSoTimeout(TIMEOUT);
         mgr.register(new GoogleMapMaker(LOCATIONFILE, mgr));
         LOGGER.setLevel(Level.ALL);
         LOGGER.addHandler(fh);
@@ -200,7 +207,8 @@ public class AddATudeServer extends Thread {
                         return;
                     }
                     /*Problem parsing message*/
-                    String msg="Unable to parse message.";
+                    System.out.println(e1.getMessage());
+                    String msg=e1.getMessage();
                     output(msg,0,msg.length());
                     writeToLogger(msg);
                     return;
@@ -208,7 +216,7 @@ public class AddATudeServer extends Thread {
                     /*server must terminate the connection*/
                     writeToLogger(e.getMessage()+"***client terminated");
                 } 
-
+                
                 String operation = message.getOperation();
                 
                 if(message.getMapId() != MAPID) {
@@ -294,7 +302,7 @@ public class AddATudeServer extends Thread {
             writeToLogger(temp);
             
         } catch (AddATudeException e) {
-            String msg="Unable to parse message.";
+            String msg=e.getLocalizedMessage();
             output(msg,0,msg.length());
             return;
         }
@@ -318,7 +326,8 @@ public class AddATudeServer extends Thread {
             response.encode(out);
             
         } catch (AddATudeException e) {
-            String msg="Unable to parse message.";
+            
+            String msg=e.getMessage();
             output(msg,0,msg.length());
             return;
         }
@@ -334,16 +343,35 @@ public class AddATudeServer extends Thread {
      * @throws IOException - ioException
      */
     @SuppressWarnings("resource")
-    public static void main(String[] args) throws NumberFormatException, IOException {
-        ServerSocket server = new ServerSocket(Integer.valueOf(args[0]));
-        ExecutorService threadPool = Executors.newFixedThreadPool(Integer.valueOf(args[1])); 
-        readPassword(args[2]);
+    public static void main(String[] args) throws NumberFormatException {
+        if((args.length <3) || (args.length >4)) {
+            System.out.println("parameters: <Port> <Thread num> <userFile>");
+            System.exit(0);
+        }     
+        ServerSocket server = null;
+        ExecutorService threadPool = null;
+        try {
+            server = new ServerSocket(Integer.valueOf(args[0]));
+            threadPool = Executors.newCachedThreadPool();//newFixedThreadPool(Integer.valueOf(args[1])); 
+            readPassword(args[2]);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            System.exit(0);
+        }
+        
         while(true) {
-            Socket socket = server.accept();          
-            AddATudeServer aServer = new AddATudeServer(socket);
-            System.out.println("Handling client"+socket.getInetAddress().getHostAddress()+
-                    "-"+socket.getPort()+"with thread id"+aServer.getId());
-            threadPool.submit(aServer);
+            Socket socket=null;
+            try {
+                socket = server.accept();
+                AddATudeServer aServer = new AddATudeServer(socket);
+                System.out.println("Handling client "+socket.getInetAddress().getHostAddress()+
+                        "-"+socket.getPort()+" with thread id "+aServer.getId());
+                threadPool.submit(aServer);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                System.exit(0);
+            }          
+            
 
         }
     }

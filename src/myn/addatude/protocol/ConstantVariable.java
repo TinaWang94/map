@@ -9,5 +9,6 @@ public class ConstantVariable {
     public static final String CHECKID = "0|[1-9][0-9]*";
     public static final String EOLN="\r\n";
     public static final String HEADER="ADDATUDEv1";
+    public static final  String UNI = "UTF-8";
     
 }
