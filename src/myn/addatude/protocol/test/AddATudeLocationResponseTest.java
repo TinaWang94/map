@@ -18,8 +18,6 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
 import java.util.List;
 
 import myn.addatude.protocol.AddATudeException;
@@ -58,13 +56,11 @@ public class AddATudeLocationResponseTest {
      /**
       * invalid end of line format, should throw an exception
       * @throws AddATudeException - if deserialization or validation failure
-      * @throws EOFException - if premature end of stream
-      * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
       * 
       * */
      @Test (expected = AddATudeException.class)
-     public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
+     public void testEofL() throws AddATudeException, IOException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor \r\n".getBytes("ASCII")));
          
@@ -75,12 +71,10 @@ public class AddATudeLocationResponseTest {
      /**
       * test addLocationRecord function and toString function
       * @throws AddATudeException - if deserialization or validation failure
-      * @throws EOFException - if premature end of stream
-      * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
       * */
      @Test 
-     public void testAddLocationRecord() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
+     public void testAddLocationRecord() throws AddATudeException, IOException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
          
@@ -97,12 +91,10 @@ public class AddATudeLocationResponseTest {
      /**
       * test setMapName function and getmapName function
       * @throws AddATudeException - if deserialization or validation failure
-      * @throws EOFException - if premature end of stream
-      * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
       * */
      @Test 
-     public void testSetMapName() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
+     public void testSetMapName() throws AddATudeException, IOException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
          
@@ -117,12 +109,10 @@ public class AddATudeLocationResponseTest {
       * test setMapName function to null
       * an AddATudeexception should be thrown since mapName shouldn't be null
       * @throws AddATudeException - if deserialization or validation failure
-      * @throws EOFException - if premature end of stream
-      * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
       * */
      @Test (expected = AddATudeException.class)
-     public void testSetMapNameNull() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
+     public void testSetMapNameNull() throws AddATudeException, IOException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
          
@@ -135,12 +125,10 @@ public class AddATudeLocationResponseTest {
      /**
       * test getLocationRecordList function
       * @throws AddATudeException - if deserialization or validation failure
-      * @throws EOFException - if premature end of stream
-      * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
       * */
      @Test 
-     public void testGetLocationRecordList() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
+     public void testGetLocationRecordList() throws AddATudeException, IOException {
          MessageInput in = new MessageInput(new ByteArrayInputStream
                  ("ADDATUDEv1 345 RESPONSE 2 BU2 1 1.2 3.4 2 BU6 Baylor1 1.3 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
          

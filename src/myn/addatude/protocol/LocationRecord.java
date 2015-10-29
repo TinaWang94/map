@@ -310,7 +310,6 @@ public class LocationRecord {
         try {
             out.write(aString.getBytes("UTF-8"));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             throw new AddATudeException("serialization output fails");
         }
     }

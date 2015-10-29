@@ -15,6 +15,7 @@ package myn.addatude.app;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -139,7 +140,10 @@ public class AddATudeServer extends Thread {
      * 
      */
     private static void readPassword(String filename) {
-             
+        File file = new File(filename);
+        if(file.length() == 0) {
+            System.out.println("Empty password file");
+        }
         try(BufferedReader br = new BufferedReader(new InputStreamReader
                 (new FileInputStream(filename),ConstantVariable.UNI))) {
             String line = br.readLine();
@@ -192,69 +196,74 @@ public class AddATudeServer extends Thread {
      * */
     @Override
     public void run() {
+        System.out.println("Handling client "+socket.getInetAddress().getHostAddress()+
+                "-"+socket.getPort()+" with thread id "+Thread.currentThread().getId());
+       
         while(true) {
-            
-                AddATudeMessage message = null;
-                try {
-                    message = AddATudeMessage.decode(in);
-                    
-                } catch (EOFException | AddATudeException e1) {
-                    if(e1.getMessage().equals(InvalidHeader)) {
-                        /*receive unexpected version*/
-                        String msg="Unexpected version: "+message.getVersion();
-                        output(msg,message.getMapId(),msg.length());
-                        writeToLogger(msg);
-                        return;
-                    }
-                    /*Problem parsing message*/
-                    System.out.println(e1.getMessage());
-                    String msg=e1.getMessage();
-                    output(msg,0,msg.length());
+                
+            AddATudeMessage message = null;
+            try {
+                message = AddATudeMessage.decode(in);
+                
+            } catch (EOFException | AddATudeException e1) {
+                if(e1.getMessage().equals(InvalidHeader)) {
+                    /*receive unexpected version*/
+                    String msg="Unexpected version: "+message.getVersion();
+                    output(msg,message.getMapId(),msg.length());
                     writeToLogger(msg);
                     return;
-                } catch (SocketException e) {
-                    /*server must terminate the connection*/
-                    writeToLogger(e.getMessage()+"***client terminated");
-                } 
-                
-                String operation = message.getOperation();
-                
-                if(message.getMapId() != MAPID) {
-                    String msg="No such map: "+message.getMapId();
-                    int count=msg.length();
+                }
+                /*Problem parsing message*/
+               
+                String msg=e1.getMessage();
+                output(msg,0,msg.length());
+                writeToLogger(msg);
+                return;
+            } catch (SocketException e) {
+                /*server must terminate the connection*/
+                writeToLogger(e.getMessage()+"***client terminated");
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } 
+            String operation = message.getOperation();
+            
+            if(message.getMapId() != MAPID) {
+                String msg="No such map: "+message.getMapId();
+                int count=msg.length();
+                output(msg,message.getMapId(),count);
+                writeToLogger(msg);
+                continue;
+            }
+            
+            switch(operation) {
+                /*handle NEW operation*/
+                case ConstantVariable.NEW:
+                    operationNew((AddATudeNewLocation)message);
+                    break;
+                /*handle ALL operation*/
+                case ConstantVariable.ALL:
+                    operationAll(message);
+                    break;
+                /*receive other AddATudeMessage*/
+                case ConstantVariable.RESPONSE:
+                case ConstantVariable.ERROR:
+                    String msg="Unexpected message type: "+operation;                       
+                    int count;
+                    count=msg.length();
                     output(msg,message.getMapId(),count);
                     writeToLogger(msg);
-                    return ;
-                }
-                
-                switch(operation) {
-                    /*handle NEW operation*/
-                    case ConstantVariable.NEW:
-                        operationNew((AddATudeNewLocation)message);
-                        break;
-                    /*handle ALL operation*/
-                    case ConstantVariable.ALL:
-                        operationAll(message);
-                        break;
-                    /*receive other AddATudeMessage*/
-                    case ConstantVariable.RESPONSE:
-                    case ConstantVariable.ERROR:
-                        String msg="Unexpected message type: "+operation;                       
-                        int count;
-                        count=msg.length();
-                        output(msg,message.getMapId(),count);
-                        writeToLogger(msg);
-                        break;
-                    /*receive unknown message*/
-                    default:
-                        msg="Unknown operation: "+operation;
-                        count=msg.length();
-                        output(msg,message.getMapId(),count);
-                        writeToLogger(msg);
-                        break;
-                
-                }
-            } 
+                    break;
+                /*receive unknown message*/
+                default:
+                    msg="Unknown operation: "+operation;
+                    count=msg.length();
+                    output(msg,message.getMapId(),count);
+                    writeToLogger(msg);
+                    break;
+            
+            }
+        } 
         
     }
     
@@ -340,19 +349,18 @@ public class AddATudeServer extends Thread {
      * first: port number; second: threads number; third: password file name
      * 
      * @throws NumberFormatException - number format exception
-     * @throws IOException - ioException
      */
     @SuppressWarnings("resource")
     public static void main(String[] args) throws NumberFormatException {
-        if((args.length <3) || (args.length >4)) {
-            System.out.println("parameters: <Port> <Thread num> <userFile>");
+        if((args.length <3) || (args.length >=4)) {
+            System.out.println("Parameters for server: <Port> <Thread num> <userFile>");
             System.exit(0);
         }     
         ServerSocket server = null;
         ExecutorService threadPool = null;
         try {
             server = new ServerSocket(Integer.valueOf(args[0]));
-            threadPool = Executors.newCachedThreadPool();//newFixedThreadPool(Integer.valueOf(args[1])); 
+            threadPool = Executors.newFixedThreadPool(Integer.valueOf(args[1])); 
             readPassword(args[2]);
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -364,8 +372,7 @@ public class AddATudeServer extends Thread {
             try {
                 socket = server.accept();
                 AddATudeServer aServer = new AddATudeServer(socket);
-                System.out.println("Handling client "+socket.getInetAddress().getHostAddress()+
-                        "-"+socket.getPort()+" with thread id "+aServer.getId());
+                
                 threadPool.submit(aServer);
             } catch (IOException e) {
                 System.out.println(e.getMessage());

@@ -89,7 +89,7 @@ public class MessageInput {
      * @return the total number of bytes read into the buffer,
      *          or -1 if there is no more data because the end
      *          of the stream has been reached.
-     *@throws IOException - read in error
+     * @throws IOException - read in error
      * */
     
     public int read(byte[] b, int off, int len) throws IOException {
@@ -202,20 +202,19 @@ public class MessageInput {
      * 
      * */
     public void readToEOLN() throws AddATudeException, EOFException {
-        byte []b = new byte[2];
-        int length = 0;
-        try {
-            length=read(b,0,2);
+
+        byte bt = 0;
+        byte bt1 = 0;
+        try {          
+            bt=(byte) in.read();
+            bt1=(byte) in.read();
             
         } catch (IOException e) {
             e.printStackTrace();
         }
-         if(length != 2) {
-             throw new EOFException ("Need EOLN symbol");
-         }
-         //13 is ASCII code for \r and 10 is ASCII code for \n
-         if(b[0] != 13 || b[1] != 10) {
-             throw new AddATudeException("End of line format error");
+         
+         if(bt != 13 || bt1 != 10) {
+             throw new EOFException("End of line error");
          }
 
     }

@@ -19,8 +19,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
+
 
 import myn.addatude.protocol.AddATudeException;
 import myn.addatude.protocol.AddATudeMessage;
@@ -98,12 +97,10 @@ public class AddATudeMessageTest {
      * test setmapId
      * It will throw an exception since mapId should be non-nagative value 
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      */
     @Test (expected = EOFException.class)
-    public void testEoF() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
+    public void testEoF() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 AL".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })
         AddATudeMessage b=a.decode(in);
@@ -117,12 +114,10 @@ public class AddATudeMessageTest {
      * test short decode
      * It will throw an exception since message is short
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      */
     @Test (expected = EOFException.class)
-    public void testShort() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
+    public void testShort() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDA".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })
         AddATudeMessage b=a.decode(in);

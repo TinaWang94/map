@@ -16,9 +16,8 @@ package myn.addatude.protocol.test;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.EOFException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
+import java.io.IOException;
+
 
 import myn.addatude.protocol.AddATudeException;
 import myn.addatude.protocol.AddATudeLocationRequest;
@@ -38,13 +37,11 @@ public class AddATudeLocationRequestTest {
     /**
      * test decode of request and toString function
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      * 
      * */
     @Test
-    public void testDecode() throws EOFException, AddATudeException, UnsupportedEncodingException, SocketException {
+    public void testDecode() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ALL \r\n".getBytes("ASCII")));
         
         @SuppressWarnings("static-access")
@@ -55,13 +52,11 @@ public class AddATudeLocationRequestTest {
     /**
      * invalid end of line format, should throw an exception
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException  - connection error
+     * @throws IOException - IOException
      * 
      * */
     @Test (expected = AddATudeException.class)
-    public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
+    public void testEofL() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ALL  \r\n".getBytes("ASCII")));
         
         @SuppressWarnings({ "static-access", "unused" })

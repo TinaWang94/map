@@ -21,8 +21,6 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
 
 import myn.addatude.protocol.AddATudeException;
 import myn.addatude.protocol.AddATudeMessage;
@@ -58,14 +56,12 @@ public class AddATudeNewLocationTest {
     /**
      * invalid end of line format, should throw an exception
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      * 
      * */
     
     @Test (expected = AddATudeException.class)
-    public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
+    public void testEofL() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream
                 ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor \r\n".getBytes("ASCII")));
         
@@ -78,12 +74,10 @@ public class AddATudeNewLocationTest {
      * test setLocationRecord function
      * it should throw an AddATudeException since null is invalid for LocationRecord
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      * */
     @Test (expected = AddATudeException.class)
-    public void testSetLocationRecord() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
+    public void testSetLocationRecord() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream
                 ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })
@@ -95,13 +89,11 @@ public class AddATudeNewLocationTest {
      * test GetLocationRecord function
      * 
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      * 
      * */
     @Test 
-    public void testGetLocationRecord() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
+    public void testGetLocationRecord() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream
                 ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })
@@ -114,12 +106,10 @@ public class AddATudeNewLocationTest {
     /**
      * test equals function
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      */
     @Test 
-    public void testEquals() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
+    public void testEquals() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream
                 ("ADDATUDEv1 345 NEW 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes("ASCII")));
         @SuppressWarnings({ "static-access" })

@@ -42,7 +42,10 @@ public class MessageOutput {
      * */
     
     public void write(byte[] b) throws IOException {
-        out.write(b);
+        for(int i = 0;i<b.length ;i++) {
+            out.write(b[i]);
+        }
+        
     }
     /**
      * Writes String b 

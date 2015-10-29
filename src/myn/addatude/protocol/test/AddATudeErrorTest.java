@@ -17,8 +17,8 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
+import java.io.IOException;
+
 
 import myn.addatude.protocol.AddATudeError;
 import myn.addatude.protocol.AddATudeException;
@@ -37,13 +37,11 @@ public class AddATudeErrorTest {
     /**
      * test decode of error message and toString function
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      * 
      * */
     @Test
-    public void testDecode() throws EOFException, AddATudeException, UnsupportedEncodingException, SocketException {
+    public void testDecode() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 error\r\n".getBytes("ASCII")));
         
         AddATudeMessage b=AddATudeMessage.decode(in);
@@ -53,13 +51,11 @@ public class AddATudeErrorTest {
     /**
      * invalid end of line format, should throw an exception
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException  - connection error
+     * @throws IOException -IOException
      * 
      * */
     @Test (expected = AddATudeException.class)
-    public void testEofL() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException  {
+    public void testEofL() throws AddATudeException, IOException  {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 error \r\n".getBytes("ASCII")));
         
         @SuppressWarnings("unused")
@@ -70,13 +66,11 @@ public class AddATudeErrorTest {
     /**
      * invalid error message
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException  - connection error
+     * @throws IOException - IOException
      * 
      * */
     @Test (expected = EOFException.class)
-    public void testInvalidErrorMsg() throws UnsupportedEncodingException, EOFException, AddATudeException, SocketException {
+    public void testInvalidErrorMsg() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 errr\r\n".getBytes("ASCII")));
         
         @SuppressWarnings("unused")
@@ -87,12 +81,10 @@ public class AddATudeErrorTest {
      * test get errorMessage function
      * 
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      * */
     @Test          
-    public void testGetErrorMsg() throws EOFException, AddATudeException, UnsupportedEncodingException, SocketException {
+    public void testGetErrorMsg() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 error\r\n".getBytes("ASCII")));
 
         AddATudeMessage b=AddATudeMessage.decode(in);
@@ -103,12 +95,10 @@ public class AddATudeErrorTest {
      * test set errorMessage function
      * it should throw an AddATudeException since null is invalid for error msg
      * @throws AddATudeException - if deserialization or validation failure
-     * @throws EOFException - if premature end of stream
-     * @throws UnsupportedEncodingException - unsupported encoding exception
-     * @throws SocketException - connection error
+     * @throws IOException - IOException
      * */ 
     @Test (expected = AddATudeException.class)
-    public void testSetErrorMessage() throws AddATudeException, EOFException, UnsupportedEncodingException, SocketException {
+    public void testSetErrorMessage() throws AddATudeException, IOException {
         MessageInput in = new MessageInput(new ByteArrayInputStream("ADDATUDEv1 345 ERROR 5 error\r\n".getBytes("ASCII")));
         AddATudeMessage b=AddATudeMessage.decode(in);
         ((AddATudeError)b).setErrorMessage(null);
