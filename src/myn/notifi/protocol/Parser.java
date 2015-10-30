@@ -1,3 +1,14 @@
+/*
+ * Classname : Parser
+ *
+ * Version information : 1.0
+ *
+ * Date : 10/29/2015
+ *
+ * Copyright notice
+ * 
+ * Author : Tong Wang
+ */
 package myn.notifi.protocol;
 
 import java.io.DataInput;
@@ -6,53 +17,117 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class Parser {
-    public static short convertShort(short num){
-        
-        return (short)(((num & 0xff00) >> 4) | (num & 0x00ff));
-    }
+/**
+ * This class provides basic functions
+ * for converting big-Endian to little endian
+ * 
+ * Convert int, short, double from big endian to little endian
+ * and the corresponding read/write functions
+ * 
+ * */
 
-    public static ByteBuffer Order (ByteBuffer buffer){
-        byte [] b = buffer.array();
-        int len = b.length;
-        for(int i = 0;i<len/2;i++) {
-            byte temp = b[i];
-            b[i]=b[len-1-i];
-            b[len-1-i]=temp;
-        }
-        buffer.clear();
-        buffer.put(b);
-        return buffer;
+public class Parser {
+    /**
+     *  Byte swap a single short value.
+     *  
+     * @param num - number to byte swap
+     * @return Byte swapped representation.
+     */
+    public static short swapShort(short num){
+        
+        int b1 = num & 0xff;
+        int b2 = (num >> 8) & 0xff;
+
+        return (short) (b1 << 8 | b2 << 0);
     }
-    //for int , the number is depends on different situation
+    
+    /**
+     * Byte swap a single short value.
+     * 
+     * @param num - number to byte swap
+     * @return Byte swapped representation.
+     */
+    public static int swapInt(int num ) {
+        int b1 = (num >>  0) & 0xff;
+        int b2 = (num >>  8) & 0xff;
+        int b3 = (num >> 16) & 0xff;
+        int b4 = (num >> 24) & 0xff;
+
+        return b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0;
+    }
+    
+    /**
+     * Byte swap a single long value. 
+     * Used in double swapped
+     * 
+     * @param num - number to byte swap
+     * @return Byte swapped representation.
+     */
+    public static long swapLong (long num) {
+        long b1 = (num >>  0) & 0xff;
+        long b2 = (num >>  8) & 0xff;
+        long b3 = (num >> 16) & 0xff;
+        long b4 = (num >> 24) & 0xff;
+        long b5 = (num >> 32) & 0xff;
+        long b6 = (num >> 40) & 0xff;
+        long b7 = (num >> 48) & 0xff;
+        long b8 = (num >> 56) & 0xff;
+
+        return b1 << 56 | b2 << 48 | b3 << 40 | b4 << 32 |
+               b5 << 24 | b6 << 16 | b7 <<  8 | b8 <<  0;
+    }
+    
+    /**
+     * Byte swap a single double value. 
+     * 
+     * @param num - number to byte swap
+     * @return Byte swapped representation.
+     */
+    public static double swapDouble(double num) {
+        
+        long longValue = Double.doubleToLongBits (num);
+        longValue = swapLong (longValue);
+        return Double.longBitsToDouble (longValue);
+    }
+ 
+    /**
+     * Return an int value from big endian to little endian
+     * 
+     * @param in - dataInput
+     * @param num - the byte for the "integer"-- 1-byte 2-short 4-int
+     * @return Byte swapped representation.
+     * @throws IOException - io fails
+     */
     public static int readInt(DataInput in,int num) throws IOException {
         if(num == 1)
             return in.readByte();
-        ByteBuffer buffer = ByteBuffer.allocate(num);
-        System.out.println("-----");
-        for(int i=0;i<num;i++) {
-            byte temp = in.readByte();
-            System.out.println(temp);
-            buffer=buffer.put(temp);
-        } 
-        buffer=Order(buffer);
-        //System.out.println(buffer.array()[0]);
-        //System.out.println(buffer.array()[1]);
-        if(num == 2) {
-            return buffer.getShort();
-        }
-        return buffer.getInt();
+        if(num == 2) 
+            return swapShort(in.readShort());      
+        if(num == 4) 
+            return swapInt(in.readInt());
+        return -1;        
     }
     
-    //num for double is 8 bytes
+    /**
+     * Return a double value from big endian to little endian
+     * 
+     * @param in - dataInput
+     * @param num - bytes for a double value 
+     * @return Byte swapped representation.
+     * @throws IOException - if I/O problem 
+     */
     public static double readDouble(DataInput in,int num) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(num);
-        for(int i=0;i<num;i++) {
-            buffer=buffer.put(in.readByte());
-        } 
-        buffer=Order(buffer);
-        return buffer.getDouble();
+        return swapDouble(in.readDouble());
     }
+    
+    /**
+     * Return a string from dataInput( For String, big/little endian does nor matter)
+     * 
+     * @param in - dataInput
+     * @param num - length of the string to convert
+     * @return - the result String
+     * @throws IOException - io fails
+     */
     public static String readString(DataInput in, int num ) throws IOException{
         StringBuffer buffer = new StringBuffer();
         for(int i=0 ; i<num ; i++) {
@@ -61,43 +136,85 @@ public class Parser {
         return buffer.toString();
     } 
     
+    /**
+     * Return a int value, store the version information
+     * Need shift bit since version has only 4 bit
+     * 
+     * @param b - the byte which store version info in its highest 4 bit
+     * 
+     * @return version in int type
+     */
     public static int readVer(byte b) {       
         return b>>4;
     }
+    
+    /**
+     * Return a int value, store the code information
+     * 
+     * Need shift bit since code has only 4 bit
+     * @param b - the byte which store version info in its lowest 4 bit
+     * @return code in int type
+     */
     public static int readCode(byte b) {
-        return (b<<4)/10000;
+        return (b&0x0f);
     }
     
-    public static byte[] readAddr(DataInputStream in) throws IOException, IllegalArgumentException {
+    /**
+     * Read ip address from data input
+     * 
+     * @param in - dataInputStream
+     * @return - address stored in a byte array
+     * @throws IOException - I/O problem
+     */
+    public static byte[] readAddr(DataInputStream in) throws IOException {
         //address is 4 bytes int
-        int num =4;
-        ByteBuffer buffer = ByteBuffer.allocate(num);
-        for(int i=0;i<num;i++) {
-            buffer=buffer.put(in.readByte());
-        } 
-        buffer=Order(buffer);
-
-        return buffer.array();
+        int len = 4;
+        byte []b = new byte[len];
+        
+        for(int i = 0; i<len; i++) {
+            b[len-1-i] = in.readByte(); 
+        }
+        return b;
     }
     
+    /**
+     * Return a string from dataInputStream
+     * Used for getting error message since the length of the string is unknown.
+     * 
+     * @param in - dataInput
+     * @return A string -error message
+     * @throws IOException - I/O problem 
+     */
     public static String readError(DataInputStream in) throws IOException {
         
         StringBuffer aBuf = new StringBuffer();
         while(in.available()>0) {
-            aBuf.append(in.readChar());
-        }
-        
+
+            aBuf.append((char)in.readByte());
+        }       
         return aBuf.toString();
     }
     
+    /**
+     * Write a double in little endian to dataOutput
+     * 
+     * @param out - DataOutput
+     * @param dou - the double to write out
+     * @param num - 8 bytes for a double 
+     * @throws IOException - if I/O problem 
+     */
     public static void writeDouble(DataOutput out, double dou,int num) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(num);
-        buffer.putDouble(dou);
-        buffer=Order(buffer);
-        out.write(buffer.array());       
+        out.writeDouble(swapDouble(dou));      
     }
     
     //i is versin and j is code
+    /**
+     * encode version and code info to a single byte
+     * 
+     * @param i - version info
+     * @param j - code info
+     * @return - a byte contains version and code info
+     */
     public static byte appendBit(int i, int j) {
         //15 in binary is 00001111
         int a = 15;
@@ -105,45 +222,78 @@ public class Parser {
         temp=(a&i)<<4;
 
         temp= temp | (j & a);
-        ///////////////////////////////////////////////
-        //im not sure
+
         return (byte)temp;
         
     }
     
+    /**
+     * Convert integer to an byte array in little endian
+     * 
+     * @param i - the integer to be converted
+     * @param num - bytes of the integer--1-byte 2-short 4-int
+     * @return resule byte array
+     */
     public static byte[] intToByte(int i, int num) {
+                
         ByteBuffer bf = ByteBuffer.allocate(num);
-        if(num == 2) {
-            bf.putShort((short)i);
-        }
-        if(num == 4) {
-            bf.putInt(i);
-        }
-        bf=Order(bf);
-        return bf.array();
-    }
-    
-    public static byte[] changeOrder (byte [] b) {
-        ByteBuffer bf=ByteBuffer.allocate(b.length);
-        bf=Order(bf);
-        return bf.array();
-    }
-    
-    public static void writeInt(DataOutput out,int i,int num) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(num);
+        //short
         if(num == 1) {
-            buffer.put((byte)i);
+            bf.put((byte) i);
+        }
+        if(num == 2) {
+            bf.putShort(swapShort((short)i));
+        }
+        //int
+        else if(num == 4) {
+            bf.putInt(swapInt(i));
+        }        
+        return bf.array();
+        
+    }
+    
+    /**
+     * Reverse order for a byte array
+     * @param b - an byte array to be reversed
+     * @return - result byte array
+     */
+    public static byte[] changeOrder (byte [] b) {
+        
+        byte [] a = new byte[b.length];
+        for(int i=0;i<b.length;i++) {
+            a[i] = b[b.length-1-i];
+        }
+        return a;
+    }
+    
+    /**
+     * Write out an integer to dataOutoput in little endian
+     * 
+     * @param out dataOutput
+     * @param i - integer to write out
+     * @param num - bytes info for the integer 1-byte 2-short 4-int
+     * @throws IOException - if I/O problem
+     */
+    public static void writeInt(DataOutput out,int i,int num) throws IOException {
+
+        if(num == 1) {
+            out.writeByte(i);
         }
         else if(num == 2) {
-            buffer.putShort((short)i);
+            out.writeShort(swapShort((short)i));
         }
         else if(num == 4) {
-            buffer.putInt(i);
+            out.writeInt(swapInt(i));
         }
         
-        buffer=Order(buffer);
-        out.write(buffer.array());
     }
+    /**
+     * Write out a string to dataOutput 
+     * 
+     * @param out - dataOutput
+     * @param aString - the string to write out
+     * @throws IOException - if I/O problem
+     */
     public static void writeString(DataOutput out,String aString) throws IOException {
         out.write(aString.getBytes());
     }

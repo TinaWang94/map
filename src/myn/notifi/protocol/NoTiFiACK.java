@@ -1,41 +1,109 @@
+/*
+ * Classname : NoTiFiACK
+ *
+ * Version information : 1.0
+ *
+ * Date : 10/29/2015
+ *
+ * Copyright notice
+ * 
+ * Author : Tong Wang
+ */
 package myn.notifi.protocol;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 
+/**
+ * Purpose of the class:
+ * 
+ * Represents an ACK
+ * 
+ * */
+
 public class NoTiFiACK extends NoTiFiMessage{
+    /*initial constant value: code for ACK*/
     private final int code=ConstVal.ACK;
     
+    /**
+     * Constructs NoTiFi ACK from input stream
+     * 
+     * @param in - deserialization input source
+     * @throws IllegalArgumentException - if data fails validation
+     * @throws IOException - if I/O problems
+     */
     public NoTiFiACK(DataInputStream in) throws IllegalArgumentException, IOException{
        
     }
+    
+    /**
+     * Constructs NoTiFi ACK from values
+     * 
+     * @param msgId - message ID
+     * @throws IllegalArgumentException - if data fails validation
+     */
     public NoTiFiACK(int msgId) throws IllegalArgumentException {
         super(msgId);
     }
+    
+    /**
+     * Constructs NoTiFi ACK from values(dataInput)
+     * 
+     * @param in - dataInput
+     * @param msgId - MSG ID
+     * @param version - version info
+     * @throws IllegalArgumentException - if data fails validation
+     */
     public NoTiFiACK(DataInputStream in,int msgId,int version) throws IllegalArgumentException {
         super(msgId);
         this.version=version;
     }
-    
+        
+    /**
+     * Get operation code
+     * 
+     * @return - operation code
+     */
     @Override
     public int getCode() {
         return code;
     }
    
+    
+    /**
+     * toString in class NoTiFiMessage
+     * 
+     * @return human readable result string
+     * */
     @Override
     public String toString(){
-        return null;
+        return "ACK";
     }
     
+        
+    /**
+     * impliment abstract function from parent class,
+     * encode version and code info
+     * 
+     * @return Serializes message for header
+     */
     @Override
-    public byte encodeHeader() {
-        return Parser.appendBit(ConstVal.version, code);
+    public byte[] encodeHeader() {
+        byte [] b= new byte[1];
+        b[0]=Parser.appendBit(ConstVal.version, code);
+        return b;
     }
     
+   
+    /**
+     * impliment abstract function from parent class, encode data.
+     * Type of data depends on code
+     * 
+     * @return - Serializes message for data
+     */  
     @Override
     public byte[] encodeHelper() {
-        //no payload
-        return null;
+        return new byte[0];
     }
    
 }

@@ -1,3 +1,14 @@
+/*
+ * Classname : ConstantVariable
+ *
+ * Version information : 1.0
+ *
+ * Date : 10/29/2015
+ *
+ * Copyright notice
+ * 
+ * Author : Tong Wang
+ */
 package myn.addatude.protocol;
 
 public class ConstantVariable {
