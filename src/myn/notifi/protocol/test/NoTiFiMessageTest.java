@@ -24,7 +24,6 @@ import myn.notifi.protocol.NoTiFiLocationAddition;
 import myn.notifi.protocol.NoTiFiLocationDeletion;
 import myn.notifi.protocol.NoTiFiMessage;
 import myn.notifi.protocol.NoTiFiRegister;
-import myn.notifi.protocol.IllegalArgumentException;
 
 import org.junit.Test;
 

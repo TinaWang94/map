@@ -16,7 +16,6 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.Inet4Address;
 
-import myn.notifi.protocol.IllegalArgumentException;
 import myn.notifi.protocol.NoTiFiMessage;
 import myn.notifi.protocol.NoTiFiRegister;
 

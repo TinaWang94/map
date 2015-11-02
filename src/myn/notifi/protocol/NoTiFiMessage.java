@@ -27,6 +27,9 @@ public abstract class NoTiFiMessage {
     /*initial constant value for error message*/
     private final static String errorMsg = "Invalid id";
     private  static final String errorMsg2 = "Invalid code";
+    private static final String errorMsg3 = "Invalid length of message";
+    private static final String errorMsg4 = "Invalid version";
+    
     private  static final int range = 255;
     private  static final int range2 = 65535;
     /*member variable for the parent class*/
@@ -107,8 +110,11 @@ public abstract class NoTiFiMessage {
         byte b = in.readByte();
         checkId(b,1);
         int temp = Parser.readVer(b);
-        checkId(temp,1);
+        if(temp != ConstVal.version) {
+            throw new IllegalArgumentException (errorMsg4);
+        }
         int version=temp;
+        
         //get code and check validation
         temp=Parser.readCode(b);
         checkId(temp,1);
@@ -142,7 +148,9 @@ public abstract class NoTiFiMessage {
         default:
             throw new IllegalArgumentException(errorMsg2);
         }
-        
+        if(Parser.readOne(in)) {
+            throw new IOException(errorMsg3);
+        }
         return msg;
     } 
     

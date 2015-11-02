@@ -18,6 +18,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 /**
  * Purpose of this class
@@ -31,6 +32,7 @@ public class NoTiFiDeregister extends NoTiFiMessage{
     private final int code=ConstVal.deReg;
     private final String errorMsg = "Invalid address";
     private final String errorMsg2 = "Invalid port";
+
     private final int range = 65535;
     /*member variables*/
     private int port;
@@ -105,6 +107,7 @@ public class NoTiFiDeregister extends NoTiFiMessage{
         temp=Parser.readInt(in, 2);
         checkPort(port);
         port = temp;
+
     }
     
     /**
@@ -199,5 +202,24 @@ public class NoTiFiDeregister extends NoTiFiMessage{
         outputStream.write( Parser.intToByte(port, 2) );
 
         return outputStream.toByteArray( );
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        if( !(obj instanceof NoTiFiDeregister) ) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+        
+        return ((NoTiFiDeregister)obj).port == port 
+                && ((NoTiFiDeregister)obj).code == code
+                &&((NoTiFiDeregister)obj).address.equals(address);
+    }
+    
+    @Override
+    public int hashCode(){
+        return Objects.hash(code, port,address);
     }
 }

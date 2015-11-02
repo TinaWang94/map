@@ -34,6 +34,9 @@ public class ConstVal {
     public static final int ACK = 5;
     /*version message for this assignment*/
     public static final int version = 3;
+    
+    public  static final int range = 256;
+    public  static final int range2 = 65536;
     /*regex for unsigned integer*/
     public static final String CHECKID = "0|[1-9][0-9]*";
 }

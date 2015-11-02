@@ -16,6 +16,8 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
+
 
 /**
  * Purpose of this class:
@@ -145,4 +147,33 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
         locationRecord.encode(out);
         return outStream.toByteArray();
     } 
+    /**
+     * override hashCode in class java.lang.Object
+     * 
+     * */
+    @Override
+    public int hashCode() {
+        
+        return Objects.hash(code,locationRecord);
+    }
+    /**
+     * override equals in class java.lang.Object
+     * 
+     * @param obj - an object
+     * @return true if matchs, false otherwise
+     * 
+     * */
+    @Override
+    public boolean equals(Object obj) {
+        if( !(obj instanceof NoTiFiLocationAddition) ) {
+            return false;
+        }
+        
+        if(obj == this) {
+            return true;
+        }
+        return ((NoTiFiLocationAddition)obj).code == code 
+                &&((NoTiFiLocationAddition)obj).locationRecord.equals(locationRecord);
+
+    }
 }

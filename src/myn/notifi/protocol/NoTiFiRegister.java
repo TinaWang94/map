@@ -18,6 +18,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 /**
  * Purpose of this class
@@ -86,7 +87,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
         //port is 2 bytes
         int temp;
         temp=Parser.readInt(in, 2);
-        checkPort(port);
+        checkPort(temp);
         port = temp;
         
     }
@@ -197,5 +198,24 @@ public class NoTiFiRegister extends NoTiFiMessage{
         outputStream.write( Parser.intToByte(port, 2) );
 
         return outputStream.toByteArray( );
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        if( !(obj instanceof NoTiFiRegister) ) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+        
+        return ((NoTiFiRegister)obj).port == port 
+                && ((NoTiFiRegister)obj).code == code
+                &&((NoTiFiRegister)obj).address.equals(address);
+    }
+    
+    @Override
+    public int hashCode(){
+        return Objects.hash(code, port,address);
     }
 }

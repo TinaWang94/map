@@ -84,7 +84,9 @@ public class LocationRecord {
      */
     public LocationRecord(DataInput in) throws IOException, IllegalArgumentException {
         
-        short temp = in.readShort();
+        int temp = in.readShort();
+        if(temp < 0) 
+            temp += ConstVal.range2;
         checkId(temp,2);
         userId = temp;
         longitude =  Parser.readDouble(in, ConstVal.numDou);
@@ -110,10 +112,11 @@ public class LocationRecord {
     public LocationRecord(int userId, double longitude, double latitude,
             String locationName, String locationDescription) throws IllegalArgumentException {
         checkId(userId,2);
-        checkId(locationName.length(),1);
-        checkId(locationDescription.length(),1);
+
         checkString(locationName);
         checkString(locationDescription);
+        checkId(locationName.length(),1);
+        checkId(locationDescription.length(),1);
         
         this.userId=userId;
         this.longitude=longitude;
@@ -233,9 +236,9 @@ public class LocationRecord {
      * @param locationDescription - new location description
      * @throws IllegalArgumentException - if data value problem
      */
-    public void setLocationDescription(String locationDescription) throws IllegalArgumentException {
-        checkId(locationDescription.length(),1);
+    public void setLocationDescription(String locationDescription) throws IllegalArgumentException {       
         checkString(locationDescription);
+        checkId(locationDescription.length(),1);
         this.locationDescription = locationDescription;
     }
     

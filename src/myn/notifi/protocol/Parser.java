@@ -99,10 +99,21 @@ public class Parser {
      * @throws IOException - io fails
      */
     public static int readInt(DataInput in,int num) throws IOException {
-        if(num == 1)
-            return in.readByte();
-        if(num == 2) 
-            return swapShort(in.readShort());      
+
+        if(num == 1) {
+            byte temp = in.readByte();
+            if(temp<0){
+                return  (short) (temp+ConstVal.range);
+                }
+            return temp;
+        }
+        if(num == 2) {
+            short temp = swapShort(in.readShort());
+            if(temp <0) {
+                return (int)(temp+ConstVal.range2);
+                }
+            return temp;
+        }
         if(num == 4) 
             return swapInt(in.readInt());
         return -1;        
@@ -250,6 +261,21 @@ public class Parser {
         }        
         return bf.array();
         
+    }
+    /**
+     * Check if there are extra bytes in DataInput
+     * 
+     * @param in - dataInput to check
+     * @return bool - if there is not any, return false.
+     * */
+    public static boolean readOne(DataInput in) {
+        try {
+            @SuppressWarnings("unused")
+            byte b = in.readByte();
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
     }
     
     /**

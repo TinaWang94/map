@@ -15,7 +15,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
-import myn.notifi.protocol.IllegalArgumentException;
 import myn.notifi.protocol.NoTiFiError;
 import myn.notifi.protocol.NoTiFiMessage;
 
