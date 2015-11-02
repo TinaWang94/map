@@ -208,7 +208,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
         if(obj == this) {
             return true;
         }
-        
+        if (! super.equals(obj)) return false;
         return ((NoTiFiRegister)obj).port == port 
                 && ((NoTiFiRegister)obj).code == code
                 &&((NoTiFiRegister)obj).address.equals(address);

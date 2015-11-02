@@ -164,6 +164,7 @@ public class NoTiFiLocationDeletion extends NoTiFiMessage{
         if(obj == this) {
             return true;
         }
+        if (! super.equals(obj)) return false;
         return ((NoTiFiLocationDeletion)obj).code == code 
                 &&((NoTiFiLocationDeletion)obj).locationRecord.equals(locationRecord);
 

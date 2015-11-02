@@ -165,6 +165,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      * */
     @Override
     public boolean equals(Object obj) {
+
         if( !(obj instanceof NoTiFiLocationAddition) ) {
             return false;
         }
@@ -172,6 +173,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
         if(obj == this) {
             return true;
         }
+        if (! super.equals(obj)) return false;
         return ((NoTiFiLocationAddition)obj).code == code 
                 &&((NoTiFiLocationAddition)obj).locationRecord.equals(locationRecord);
 

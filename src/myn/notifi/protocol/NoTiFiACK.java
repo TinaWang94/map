@@ -126,7 +126,8 @@ public class NoTiFiACK extends NoTiFiMessage{
         if(obj == this) {
             return true;
         }
-       return ((NoTiFiACK)obj).code == code;
+        if (! super.equals(obj)) return false;
+        return ((NoTiFiACK)obj).code == code;
 
     }
 }

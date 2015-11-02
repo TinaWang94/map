@@ -147,7 +147,8 @@ public class NoTiFiError extends NoTiFiMessage {
         if(obj == this) {
             return true;
         }
-        
+        if (! super.equals(obj)) return false;
+        if (! super.equals(obj)) return false;
         return ((NoTiFiError)obj).errorMessage.compareTo(errorMessage) == 0 
                 && ((NoTiFiError)obj).code == code;
     }

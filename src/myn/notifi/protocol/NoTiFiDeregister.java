@@ -212,7 +212,7 @@ public class NoTiFiDeregister extends NoTiFiMessage{
         if(obj == this) {
             return true;
         }
-        
+        if (! super.equals(obj)) return false;
         return ((NoTiFiDeregister)obj).port == port 
                 && ((NoTiFiDeregister)obj).code == code
                 &&((NoTiFiDeregister)obj).address.equals(address);

@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Purpose of this class:
@@ -222,5 +223,22 @@ public abstract class NoTiFiMessage {
     public String toString() {
         return null;
     } 
+    @Override
+    public boolean equals(Object obj){
+        if( !(obj instanceof NoTiFiMessage) ) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+        
+        return ((NoTiFiMessage)obj).version == version 
+                && ((NoTiFiMessage)obj).msgId == msgId;
+    }
+    
+    @Override
+    public int hashCode(){
+        return Objects.hash(version,msgId);
+    }
     
 }
