@@ -90,11 +90,11 @@ public class LocationRecord {
         checkId(temp,2);
         userId = temp;
         longitude =  Parser.readDouble(in, ConstVal.numDou);
-        latitude=Parser.readDouble(in, ConstVal.numDou);
+        latitude = Parser.readDouble(in, ConstVal.numDou);
         int length = Parser.readInt(in,1);
         checkId(length,1);
-        locationName=Parser.readString(in, length);
-        length=Parser.readInt(in, 1);
+        locationName = Parser.readString(in, length);
+        length = Parser.readInt(in, 1);
         checkId(length,1);
         locationDescription = Parser.readString(in, length);
     }

@@ -27,7 +27,7 @@ import java.util.Objects;
 public abstract class NoTiFiMessage {
     /*initial constant value for error message*/
     private final static String errorMsg = "Invalid id";
-    private  static final String errorMsg2 = "Invalid code";
+    private  static final String errorMsg2 = "Unexpected code";
     private static final String errorMsg3 = "Invalid length of message";
     private static final String errorMsg4 = "Invalid version";
     
