@@ -27,7 +27,7 @@ public class NoTiFiClient {
     private static int localPort = 1682;
     
     private DatagramSocket socket;  
-    private short msgId;
+    private int msgId;
     private Inet4Address localIP;
     private int port;
     private InetAddress host;
@@ -58,25 +58,23 @@ public class NoTiFiClient {
     
     public NoTiFiClient(InetAddress host, int port, Inet4Address local)  {
         try {
-            socket = new DatagramSocket();
+            socket = new DatagramSocket(localPort,local);
+   
+            ////////////////////////////////////////////
+            //check
+            localIP = local;
+            this.host=host;
+            this.port=port;
                 
-                ////////////////////////////////////////////
-                //check
-                localIP = local;
-                this.host=host;
-                this.port=port;
-                
-                byte [] sendBuf = operationReg();        
-                DatagramPacket sendPkg = new DatagramPacket(sendBuf,sendBuf.length,host,port);
-                
-                sendPackage(sendPkg,ConstVal.reg);                
-
-                Listener thread = new Listener();
-                thread.start();
-                while(!share) {
-                    receivePackage();
-                }
-                
+            byte [] sendBuf = operationReg();        
+            DatagramPacket sendPkg = new DatagramPacket(sendBuf,sendBuf.length,host,port);
+              
+            sendPackage(sendPkg,ConstVal.reg);                
+            Listener thread = new Listener();
+            thread.start();
+            while(!share) {
+                receivePackage();
+            }                
         
             
         } catch (IOException e) {
@@ -239,7 +237,8 @@ public class NoTiFiClient {
             System.out.println("parameters: <Server> [<Port>] <Local IP>");
             System.exit(0);
         } 
-        System.out.println( Integer.valueOf(args[1]));
+        //System.out.println( Integer.valueOf(args[1]));
+        @SuppressWarnings("unused")
         NoTiFiClient client = new NoTiFiClient(InetAddress.getByName(args[0]),Integer.valueOf(args[1]),(Inet4Address) InetAddress.getByName(args[2])) ;   
         
     } 

@@ -155,6 +155,21 @@ public abstract class NoTiFiMessage {
         return msg;
     } 
     
+    static public int decodeCode (byte[] pkt) throws IOException {
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(pkt));
+        //get version and check valiation o
+        byte b = in.readByte();
+        checkId(b,1);
+        int temp = Parser.readVer(b);
+        if(temp != ConstVal.version) {
+            throw new IllegalArgumentException (errorMsg4);
+        }
+        //get code and check validation
+        temp=Parser.readCode(b);
+        checkId(temp,1);
+        return temp;
+    }
+    
     /**
      * Serializes message
      * 
