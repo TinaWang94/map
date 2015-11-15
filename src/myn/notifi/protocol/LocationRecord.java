@@ -27,9 +27,11 @@ import java.util.Objects;
 
 public class LocationRecord {
     /*two constant value setting error message for exception*/
+    public static final String CHECKSTR = "^[-+]?[0-9]*\\.?[0-9]+$";
     private final String errorMsg = "Invalid id";
     private final String errorMsg2 = "Invalid length";
     private final String errorMsg3 = "Invalid String value";
+    private final String errorMsg4 = "Invalid Double value";
     private final int range = 65535;
     private final int range2 = 255;
     /*user id, int type*/
@@ -73,7 +75,17 @@ public class LocationRecord {
         }
 
     }
+   private void checkDouble(String dou) throws IllegalArgumentException {
+       if(dou ==null) {
+           throw new IllegalArgumentException(errorMsg3);
+       }
+       if(!dou.matches(CHECKSTR)) {
+           throw new IllegalArgumentException(errorMsg4);
+       }
+   }
    
+   
+
     /**
      * Constructs location record using deserialization
      * 
@@ -125,7 +137,29 @@ public class LocationRecord {
         this.locationDescription=locationDescription;
         
     }
-    
+    /**
+     * Constructs location record with set values
+     * 
+     * @param userId - ID for user
+     * @param longitude - position of location
+     * @param latitude - position of location
+     * @param locationName - name of location
+     * @param locationDescription - description of location
+     * @throws IllegalArgumentException - if data value problem
+     */
+    public LocationRecord(int userId, String longitude, String latitude,String locationName,String locationDescription) {
+        checkId(userId,2);
+        checkDouble(longitude);
+        checkDouble(latitude);
+        checkString(locationName);
+        checkString(locationDescription);
+        this.userId=userId;
+        this.locationDescription=locationDescription;
+        this.locationName=locationName;
+        this.latitude=Double.parseDouble(latitude);
+        this.longitude=Double.parseDouble(longitude);
+        
+    }
     /**
      * Serializes location record
      * 

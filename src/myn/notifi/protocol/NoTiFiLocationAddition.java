@@ -119,7 +119,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      * */
     @Override
     public String toString() {
-        return "Add location"+locationRecord.toString();
+        return "Location Addition: "+locationRecord.toString();
     }
     /**
      * impliment abstract function from parent class,

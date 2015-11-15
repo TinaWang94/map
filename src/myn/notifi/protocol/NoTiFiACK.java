@@ -78,7 +78,7 @@ public class NoTiFiACK extends NoTiFiMessage{
      * */
     @Override
     public String toString(){
-        return "ACK";
+        return "This is an ACK";
     }
     
         
@@ -121,6 +121,7 @@ public class NoTiFiACK extends NoTiFiMessage{
     @Override
     public boolean equals(Object obj) {
         if( !(obj instanceof NoTiFiACK) ) {
+            System.out.println("---here");
             return false;
         }        
         if(obj == this) {

@@ -115,7 +115,7 @@ public class NoTiFiLocationDeletion extends NoTiFiMessage{
      * */
     @Override
     public String toString() {
-        return "Delete location"+locationRecord.toString();
+        return "Location Deletion: "+locationRecord.toString();
     }
     /**
      * impliment abstract function from parent class,

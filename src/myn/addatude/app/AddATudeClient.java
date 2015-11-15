@@ -288,7 +288,7 @@ public class AddATudeClient {
      * @throws AddATudeException - valiation fails
      */
     public static void main(String[] args) throws IOException, AddATudeException {
-        if((args.length <2) || (args.length >3)) {
+        if((args.length <2) || (args.length >=3)) {
             System.out.println("parameters: <Server> <Word> [<Port>]");
             System.exit(0);
         }     

@@ -27,3 +27,7 @@
 127.0.0.1 63807 This message needs more information.
 127.0.0.1 63807 This message needs more information.
 127.0.0.1 63854 Connection error.***client terminated
+127.0.0.1 55598 Connection error.***client terminated
+127.0.0.1 55631 1-1at1,1
+127.0.0.1 55631 2-2at2,2
+127.0.0.1 55631 Connection error.***client terminated

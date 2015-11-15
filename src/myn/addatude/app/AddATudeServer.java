@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -44,6 +45,8 @@ import myn.addatude.protocol.ConstantVariable;
 import myn.addatude.protocol.LocationRecord;
 import myn.addatude.protocol.MessageInput;
 import myn.addatude.protocol.MessageOutput;
+import myn.notifi.app.NoTiFiServer;
+import myn.notifi.protocol.ConstVal;
 
 public class AddATudeServer extends Thread {
 
@@ -70,6 +73,7 @@ public class AddATudeServer extends Thread {
     private static FileHandler fh;
     /*initialize variables: socket, MessageInput, MessageOtput, locationRecord map and password map*/
     private Socket socket;
+    private NoTiFiServer notifiServer;
     private MessageInput in;
     private MessageOutput out;
     
@@ -172,8 +176,9 @@ public class AddATudeServer extends Thread {
      * @param socket - socket to connect
      * @throws SocketException - timeout
      */
-    public AddATudeServer(Socket socket) throws SocketException {
+    public AddATudeServer(Socket socket,NoTiFiServer notifiServer) throws SocketException {
         this.socket=socket;
+        this.notifiServer=notifiServer;
         socket.setSoTimeout(TIMEOUT);
         mgr.register(new GoogleMapMaker(LOCATIONFILE, mgr));
         LOGGER.setLevel(Level.ALL);
@@ -294,7 +299,15 @@ public class AddATudeServer extends Thread {
             LocationRecord lr2 = new LocationRecord(lr.getUserId(),lr.getLongitude(),lr.getLatitude()
                     ,newLocationName,lr.getLocationDescription());
             
+            if(locationList.containsKey(lr.getUserId()%dividor)){
+                //location deletion
+                notifiServer.sendLoc(ConstVal.del, lr2);
+            }
+            
             locationList.put(lr.getUserId()%dividor, lr2);
+            //location addition
+            notifiServer.sendLoc(ConstVal.add, lr2);
+            
             /*make a new response message*/
             AddATudeLocationResponse response=new AddATudeLocationResponse(message.getMapId(),mapName);
             for(LocationRecord i : locationList.values()) {
@@ -356,12 +369,20 @@ public class AddATudeServer extends Thread {
             System.out.println("Parameters for server: <Port> <Thread num> <userFile>");
             System.exit(0);
         }     
+        
         ServerSocket server = null;
         ExecutorService threadPool = null;
+        DatagramSocket datagramSocket = null;
+        NoTiFiServer notifiServer=null;
         try {
             server = new ServerSocket(Integer.valueOf(args[0]));
-            threadPool = Executors.newFixedThreadPool(Integer.valueOf(args[1])); 
+            threadPool = Executors.newFixedThreadPool(Integer.valueOf(args[1]));
             readPassword(args[2]);
+            
+            datagramSocket = new DatagramSocket(Integer.valueOf(args[0]));
+            notifiServer = new NoTiFiServer(datagramSocket);
+            notifiServer.start();
+            
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.exit(0);
@@ -371,8 +392,7 @@ public class AddATudeServer extends Thread {
             Socket socket=null;
             try {
                 socket = server.accept();
-                AddATudeServer aServer = new AddATudeServer(socket);
-                
+                AddATudeServer aServer = new AddATudeServer(socket,notifiServer);                
                 threadPool.submit(aServer);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
