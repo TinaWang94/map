@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import myn.addatude.app.AddATudeServer;
 import myn.notifi.protocol.ConstVal;
 import myn.notifi.protocol.NoTiFiACK;
 import myn.notifi.protocol.NoTiFiDeregister;
@@ -87,8 +88,7 @@ public class NoTiFiServer extends Thread{
             try {
                 socket.receive(receivePkg);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                AddATudeServer.writeToLogger(e.getMessage());
             }
             operation(receivePkg);
             
@@ -210,7 +210,6 @@ public class NoTiFiServer extends Thread{
         try {
             sendPkg(err.encode());
         } catch (IOException e) {
-            ////////////////////////////
         }
     }
     
@@ -222,7 +221,6 @@ public class NoTiFiServer extends Thread{
         try {
             sendPkg(ack.encode());
         } catch (IOException e) {
-            //////////////////////////////
         }
     }
     
@@ -261,8 +259,7 @@ public class NoTiFiServer extends Thread{
             try {
                 socket.send(pkg);
             } catch (IOException e) {
-                //can't sent the package
-                e.printStackTrace();
+                AddATudeServer.writeToLogger(e.getMessage());
             }
         }
     }
@@ -276,8 +273,7 @@ public class NoTiFiServer extends Thread{
         try {
             socket.send(s);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            AddATudeServer.writeToLogger(e.getMessage());
         }
     }
     

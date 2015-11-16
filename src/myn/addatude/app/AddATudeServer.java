@@ -51,7 +51,7 @@ import myn.notifi.protocol.ConstVal;
 public class AddATudeServer extends Thread {
 
     /*Set useful constant value*/
-    private final static int dividor = 255;
+    private final static int dividor = 256;
     private final static String del = ":";
     private final static int TIMEOUT = 500000;
     
@@ -72,7 +72,7 @@ public class AddATudeServer extends Thread {
     /*file header for logger*/
     private static FileHandler fh;
     /*initialize variables: socket, MessageInput, MessageOtput, locationRecord map and password map*/
-    private Socket socket;
+    private static Socket socket;
     private NoTiFiServer notifiServer;
     private MessageInput in;
     private MessageOutput out;
@@ -105,7 +105,7 @@ public class AddATudeServer extends Thread {
      * 
      * @param msg - the message to write out
      */
-    private void writeToLogger(String msg){
+    public static void writeToLogger(String msg){
         LOGGER.log(Level.ALL, socket.getInetAddress().getHostAddress()+" "+
                 socket.getPort()+" "+msg+ConstantVariable.EOLN);
     }
@@ -174,8 +174,10 @@ public class AddATudeServer extends Thread {
      * and message input/output
      * 
      * @param socket - socket to connect
+     * @param notifiServer - notifi server
      * @throws SocketException - timeout
      */
+    @SuppressWarnings("static-access")
     public AddATudeServer(Socket socket,NoTiFiServer notifiServer) throws SocketException {
         this.socket=socket;
         this.notifiServer=notifiServer;

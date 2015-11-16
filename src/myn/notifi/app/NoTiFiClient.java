@@ -82,9 +82,9 @@ public class NoTiFiClient {
      */
     public NoTiFiClient(InetAddress host, int port, Inet4Address local)  {
         try {
-            socket = new DatagramSocket(localPort, localIP);
-                
             localIP = local;
+            socket = new DatagramSocket(localPort, localIP);
+                            
             this.host=host;
             this.port=port;
                 
@@ -98,7 +98,7 @@ public class NoTiFiClient {
               
             while(!share) {
                 try{
-                       receivePackage();
+                   receivePackage();
                 }catch(SocketTimeoutException e) {
                     //do noting, then go to the loop again
                 }     
@@ -223,6 +223,9 @@ public class NoTiFiClient {
 
         //get real length of the receiving message
         byte [] realMsg = Arrays.copyOfRange(rec.getData(), 0, rec.getLength());
+        if(NoTiFiMessage.decode(realMsg).getMsgId()!=msgId) {
+            System.out.println("Unexpected MSG ID");
+        }
         return NoTiFiMessage.decode(realMsg).getMsgId()==msgId 
                 &&NoTiFiMessage.decode(realMsg).getCode()==ConstVal.ACK ;
         
