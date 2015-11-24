@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
  * Convert int, short, double from big endian to little endian
  * and the corresponding read/write functions
  * 
+ * @author tong wang
  * */
 
 public class Parser {

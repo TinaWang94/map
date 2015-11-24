@@ -17,6 +17,7 @@ import java.io.IOException;
 
 /**
  * Represents generic portion of AddATude message
+ * @author tong wang
  * 
  * */
 public abstract class AddATudeMessage {

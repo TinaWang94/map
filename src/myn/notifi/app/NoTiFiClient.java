@@ -52,7 +52,7 @@ public class NoTiFiClient {
     /**
      * nested classes  Listener: 
      *     listen for quit from the keyboard
-     * 
+     * @author tong wang
      * 
      * */
     private class Listener extends Thread {
@@ -214,21 +214,39 @@ public class NoTiFiClient {
      * @throws IOException - I/O error
      */
     public boolean ifACK() throws IOException {
+                
+        byte [] receiveBuf = new byte[MAXPAYLOAD];
+        DatagramPacket receivePkg = new DatagramPacket(receiveBuf,receiveBuf.length);
         
-        byte [] buf = new byte[MAXPAYLOAD];
-        DatagramPacket rec = new DatagramPacket(buf,MAXPAYLOAD);
-        
-        socket.receive(rec);
-        //System.out.println(new String(rec.getData(), StandardCharsets.UTF_8));
-
-        //get real length of the receiving message
-        byte [] realMsg = Arrays.copyOfRange(rec.getData(), 0, rec.getLength());
-        if(NoTiFiMessage.decode(realMsg).getMsgId()!=msgId) {
-            System.out.println("Unexpected MSG ID");
+        try {
+            socket.receive(receivePkg);
+        } catch (IOException e1) {
+            if(e1 instanceof SocketTimeoutException) {
+                throw new SocketTimeoutException();
+            }
         }
-        return NoTiFiMessage.decode(realMsg).getMsgId()==msgId 
-                &&NoTiFiMessage.decode(realMsg).getCode()==ConstVal.ACK ;
         
+        byte [] realMsg = null;
+        try {
+            realMsg = Arrays.copyOfRange(receivePkg.getData(), 0, receivePkg.getLength());
+            NoTiFiMessage msg = NoTiFiMessage.decode(realMsg);
+            int code = msg.getCode();
+            if(code == ConstVal.ACK){
+                if(msg.getMsgId() != msgId) {
+                    System.out.println("Unexpected MSG ID");
+                }
+                return msg.getMsgId()==msgId;
+            }
+            //If the packet is not an ACK, still need to deal with it.
+            dealCode(msg,code);
+            
+        } catch (IllegalArgumentException | IOException e) {
+            if(e.getMessage().equals(UNEXPECTEDCODE)) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println("Unable to parse message");
+        }
+        return false;
     }
     
     /**

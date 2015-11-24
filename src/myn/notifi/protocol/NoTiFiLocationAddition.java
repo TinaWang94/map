@@ -22,6 +22,7 @@ import java.util.Objects;
 /**
  * Purpose of this class:
  * Represents a location addition message
+ * @author tong wang
  * */
 
 public class NoTiFiLocationAddition extends NoTiFiMessage{

@@ -21,6 +21,7 @@ import java.util.Objects;
  * 
  * Represents an error
  * 
+ * @author tong wang
  * */
 
 public class NoTiFiError extends NoTiFiMessage {

@@ -22,7 +22,7 @@ import myn.notifi.protocol.NoTiFiMessage;
 import org.junit.Test;
 /**
  * Generate Junit test case
- * 
+ * @author tong wang
  * */
 public class NoTiFiLocationAdditionTest {
     /**

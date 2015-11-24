@@ -21,7 +21,7 @@ import myn.notifi.protocol.NoTiFiLocationAddition;
 import org.junit.Test;
 /**
  * Generate Junit test case
- * 
+ * @author tong wang
  * */
 public class LocationRecordTest {
 

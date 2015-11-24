@@ -25,6 +25,7 @@ import java.util.Objects;
  * 
  * Represents a deregister message
  * 
+ * @author tong wang
  * */
 
 public class NoTiFiDeregister extends NoTiFiMessage{

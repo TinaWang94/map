@@ -13,7 +13,7 @@ package myn.notifi.protocol;
 
 /**
  * This class initial several useful constant values
- * 
+ * @author tong wang
  * */
 public class ConstVal {
     /*length of a byte*/

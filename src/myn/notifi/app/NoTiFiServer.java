@@ -132,8 +132,7 @@ public class NoTiFiServer extends Thread{
                         sendError(REGISTERED,code);
                     }
                 }
-                else if (!register.getAddress().equals((Inet4Address)receivePkg.getAddress()) 
-                        || register.getPort() != receivePkg.getPort()){
+                else if ( register.getPort() != receivePkg.getPort()){
                     sendError (INCORRECT,code);
                 }
                 else {
@@ -201,7 +200,7 @@ public class NoTiFiServer extends Thread{
             errorMsg = "Already registered";
         }
         else if(type == INCORRECT) {
-            errorMsg = "Incorrect address/port";
+            errorMsg = "Incorrect port";
         }
         else if(type == UNKNOWNCLIENT) {
             errorMsg ="Unknown client";

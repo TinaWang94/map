@@ -21,6 +21,7 @@ import java.util.Objects;
 /**
  * Purpose of this class:
  * Represents a location deletion message
+ * @author tong wang
  * */
 
 public class NoTiFiLocationDeletion extends NoTiFiMessage{

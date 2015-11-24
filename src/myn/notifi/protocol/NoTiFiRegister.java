@@ -24,7 +24,7 @@ import java.util.Objects;
  * Purpose of this class
  * 
  * Represents a register message
- * 
+ * @author tong wang
  * */
 
 public class NoTiFiRegister extends NoTiFiMessage{

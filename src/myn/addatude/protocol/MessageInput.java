@@ -12,6 +12,7 @@
 
 package myn.addatude.protocol;
 
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +53,10 @@ public class MessageInput {
      * */
     public MessageInput(InputStream in) {
         this.in = in;
+    }
+    public MessageInput(byte[] b) {
+        InputStream i = new ByteArrayInputStream(b);
+        this.in = i;
     }
     
     /**

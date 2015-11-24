@@ -23,7 +23,7 @@ import java.util.Objects;
 
 /**
  * Represents an AddATude new location and provides serialization/deserialization
- * 
+ * @author tong wang
  * */
 
 public class AddATudeNewLocation extends AddATudeMessage {

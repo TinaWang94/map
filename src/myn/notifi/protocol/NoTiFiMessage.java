@@ -21,7 +21,7 @@ import java.util.Objects;
  * Purpose of this class:
  * 
  * Represents generic portion of NoTiFi message (abstract)
- * 
+ * @author tong wang
  * */
 
 public abstract class NoTiFiMessage {
