@@ -57,7 +57,6 @@ public class AddATudeServer extends Thread {
     
     /*name of the location file for google map*/
     
-    // path may have to change to appropriate one
     private static final String LOCATIONFILE = "markers.js";
     /*name/version of the message*/
     public static final String InvalidHeader = "Invalid header.";
@@ -308,6 +307,7 @@ public class AddATudeServer extends Thread {
             
             locationList.put(lr.getUserId()%dividor, lr2);
             //location addition
+
             notifiServer.sendLoc(ConstVal.add, lr2);
             
             /*make a new response message*/

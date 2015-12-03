@@ -17,12 +17,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import myn.addatude.app.AddATudeServer;
@@ -53,17 +52,13 @@ public class NoTiFiServer extends Thread{
     private static final int UNABLE=7;
     /*initial local variable*/
     /*store registered address*/
-    private static Map< Integer,Inet4Address> registeredAddr =  new HashMap<>();
-    /*store registered port*/
-    private static Map< Integer,Integer> registeredPort =  new HashMap<>();
-    /*store registered msgId*/
-    private static Set<Integer> storeId = new HashSet<>();
-    
+    private static Set<InetSocketAddress> socketAddress = new HashSet<>();
+    private static Set<InetSocketAddress> regAddr = new HashSet<>();
+  
     private DatagramSocket socket;
     private int msgId;
     private Inet4Address localIP;
     private int port;
-
     
     /**
      * Constructor for NoTiFiServer
@@ -103,18 +98,13 @@ public class NoTiFiServer extends Thread{
      */
     public void operation(DatagramPacket receivePkg) {
         try {
+
+            localIP = (Inet4Address) receivePkg.getAddress();
+            port = receivePkg.getPort();
             byte [] realMsg = Arrays.copyOfRange(receivePkg.getData(),0,receivePkg.getLength());
             NoTiFiMessage msg = NoTiFiMessage.decode(realMsg);
             msgId = msg.getMsgId();
-            
-            if(receivePkg.getAddress().isMulticastAddress()) {
-                sendError(MULTICAST,-1);
-                return;
-            }
-            
-            localIP = (Inet4Address) receivePkg.getAddress();
-            port = receivePkg.getPort();
-            
+          
             int code = msg.getCode();
             if(code == ConstVal.add || code == ConstVal.del || code == ConstVal.error){
                 sendError(UNEXPECTED,code);
@@ -125,20 +115,24 @@ public class NoTiFiServer extends Thread{
                 //multicast::::
                 NoTiFiRegister register = (NoTiFiRegister) msg;
                 
-                //Already registered
-                if(!registeredAddr.isEmpty()){
-                    if(registeredAddr.get(msgId).equals(register.getAddress())
-                            &&registeredPort.get(msgId)==register.getPort()) {
-                        sendError(REGISTERED,code);
-                    }
+                
+                if(register.getAddress().isMulticastAddress()) {
+                    sendError(MULTICAST,-1);
+                    return;
                 }
-                else if ( register.getPort() != receivePkg.getPort()){
+            
+                //Already registered
+                
+                if(regAddr.contains(new InetSocketAddress(register.getAddress(),register.getPort()))) {
+                    sendError(REGISTERED,code);
+                }                        
+                else if ( register.getPort() != port){
                     sendError (INCORRECT,code);
                 }
                 else {
-                    storeId.add(msgId);
-                    registeredAddr.put(msgId,register.getAddress());
-                    registeredPort.put(msgId,register.getPort());
+
+                    socketAddress.add(new InetSocketAddress(receivePkg.getAddress(),register.getPort()));                   
+                    regAddr.add(new InetSocketAddress(register.getAddress(),register.getPort()));
                     sendACK();    
                 }
                
@@ -146,21 +140,21 @@ public class NoTiFiServer extends Thread{
             
             else if(code == ConstVal.deReg){
                 NoTiFiDeregister deregister = (NoTiFiDeregister) msg;
-                if(!registeredAddr.get(msgId).equals(deregister.getAddress()) 
-                        ||registeredPort.get(msgId) != deregister.getPort() ) {
+                if(!regAddr.contains(new InetSocketAddress(deregister.getAddress(),deregister.getPort()))) {
                     sendError(UNKNOWNCLIENT,code);
                 }
                 else {
-                    storeId.remove(msgId);
-                    registeredAddr.remove(msgId);
-                    registeredPort.remove(msgId);
+
+                    socketAddress.remove(new InetSocketAddress(receivePkg.getAddress(),deregister.getPort()));
+                    regAddr.remove(new InetSocketAddress(deregister.getAddress(),deregister.getPort()));
+
                     sendACK();
                 }
             }
 
             
         } catch (IllegalArgumentException | IOException e) {
-            if(e.getMessage().equals(UNEXPECTEDCODE)) {
+            if(UNEXPECTEDCODE.equals(e.getMessage())) {
                 try {
                     int code = NoTiFiMessage.decodeCode(receivePkg.getData());
                     sendError(UNKNOWNCODE,code);
@@ -249,11 +243,11 @@ public class NoTiFiServer extends Thread{
             // can't do encoding.
             e1.printStackTrace();
         }
-        Iterator<Integer> it = storeId.iterator();
+        Iterator<InetSocketAddress> it = socketAddress.iterator();
         while(it.hasNext()) {
-            int i = it.next();
-            Inet4Address add = registeredAddr.get(i);
-            int po = registeredPort.get(i);
+            InetSocketAddress socAddress = it.next();
+            Inet4Address add = (Inet4Address)socAddress.getAddress();
+            int po = socAddress.getPort();
             DatagramPacket pkg = new DatagramPacket(b,b.length,add,po);
             try {
                 socket.send(pkg);
@@ -270,6 +264,7 @@ public class NoTiFiServer extends Thread{
     public void sendPkg(byte [] b) {
         DatagramPacket s = new DatagramPacket(b,b.length,localIP,port);
         try {
+            
             socket.send(s);
         } catch (IOException e) {
             AddATudeServer.writeToLogger(e.getMessage());

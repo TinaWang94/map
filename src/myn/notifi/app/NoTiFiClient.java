@@ -24,7 +24,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
-//import java.nio.charset.StandardCharsets;
 
 import myn.notifi.protocol.ConstVal;
 import myn.notifi.protocol.NoTiFiMessage;
@@ -168,7 +167,6 @@ public class NoTiFiClient {
      * @param code - register or deRegister
      */
     public void sendPackage(DatagramPacket sendPkg,int code)  {
-        ////////////////////////////////////////////////
         try {
             socket.setSoTimeout(TIMEOUT);
         } catch (SocketException e) {

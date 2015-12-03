@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
+import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.util.HashMap;
@@ -30,42 +30,38 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 
-
-
-
-
-
-
-
-
-
-
-
 import mapservice.GoogleMapMaker;
 import mapservice.MapManager;
 import mapservice.MemoryMapManager;
 import myn.addatude.protocol.ConstantVariable;
 import myn.notifi.app.NoTiFiServer;
-
+/**
+ * NoTiFiServer by using AsynchronousServer
+ * Solve blocking I/O stream problem
+ * @author Tong Wang
+ * 
+ * */
 public class AddATudeServerAIO {
+    /*Set useful constant value*/
     private final static int dividor = 256;
     private final static String del = ":";
     public static final int MAPID=345;
-    
-    private static AsynchronousServerSocketChannel server;
-    public static Map<Integer,String> password = new HashMap<>();
+    private final static int TIMEOUT = 5000;
+    /*name of the location file for google map*/
     private static final String LOCATIONFILE = "markers.js";
+    /*name of the logger file*/
     private static String LOGFILE = "connections.log";
-    public static final Logger LOGGER = Logger.getLogger(AddATudeServer.class.getName());
-    private static FileHandler fh;
-    public static MapManager mgr = new MemoryMapManager();
-    
-    
-    
-    
+    /*declare variables: AsynchronousServerSocket and NoTiFi server*/
+    private static AsynchronousServerSocketChannel server;
     private static NoTiFiServer notifiServer;
     
-    
+    public static Map<Integer,String> password = new HashMap<>();
+    /*initialize a logger*/
+    public static final Logger LOGGER = Logger.getLogger(AddATudeServer.class.getName());
+    /*file header for logger*/
+    private static FileHandler fh;
+    /*initialize MapManager for google map*/
+    public static MapManager mgr = new MemoryMapManager();
     
 
     /**
@@ -138,6 +134,9 @@ public class AddATudeServerAIO {
             LOGGER.setLevel(Level.ALL);
             LOGGER.addHandler(fh);
             readPassword(args[1]);
+            DatagramSocket datagramSocket = new DatagramSocket(Integer.valueOf(args[0]));
+            notifiServer = new NoTiFiServer(datagramSocket);
+            notifiServer.start();
             InetSocketAddress addr = new InetSocketAddress("localhost",Integer.valueOf(args[0]));
             server = AsynchronousServerSocketChannel.open().bind(addr); 
             Handler hd = new Handler(server,notifiServer);
@@ -145,11 +144,10 @@ public class AddATudeServerAIO {
             server.accept(null, hd);
             
         } catch (Exception e) {
-            ///////////////////////////////////////////////
             e.printStackTrace();
         }
         while (true) {
-            Thread.sleep(1000);
+            Thread.sleep(TIMEOUT);
         }
     }
 

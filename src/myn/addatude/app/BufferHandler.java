@@ -1,3 +1,16 @@
+/*
+ * Classname : BufferHandler
+ *
+ * Version information : 1.0
+ *
+ * Date : 11/19/2015
+ *
+ * Copyright notice
+ * 
+ * Author : Tong Wang
+ * 
+ * Assignment : program7
+ */
 package myn.addatude.app;
 
 
@@ -7,7 +20,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -34,8 +46,7 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
     private final int CAP = 65535;
     private final static int dividor = 256;
     private final static String del = ":";
-    ///////////////////////////////////////
-    //private final static int TIMEOUT = 500000;
+
     public static final String MAPNAME="Class Map";
     public static final String InvalidHeader = "Invalid header.";
     private static NoTiFiServer notifiServer;
@@ -46,23 +57,38 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
     private static AsynchronousSocketChannel server;
     private ByteBuffer byteBuffer;
     
+    /**
+     * @param readBuffer
+     * @return
+     * @throws AddATudeException
+     * @throws IOException
+     */
     public AddATudeMessage deframer(ByteBuffer readBuffer) throws AddATudeException, IOException{
+        //System.out.println("newline="+new String(readBuffer.array()));
+        readBuffer.flip();
         readBuffer.mark();
         StringBuffer aBuf = new StringBuffer();
-        byte b;
+        int b;
         while(readBuffer.hasRemaining()){
             b=readBuffer.get();
-            aBuf.append(b);
+            aBuf.append((char)b);
             if(b==DELIMITER){
+                //readBuffer.flip();
+                if(!readBuffer.hasRemaining())
+                    break;
                 b=readBuffer.get();
-                aBuf.append(b);
+                aBuf.append((char)b);
                 if(b==DELIMITER2){
-                    return AddATudeMessage.decode(new MessageInput(aBuf.toString().getBytes()));
+                    readBuffer.reset();
+                    readBuffer.clear();
+                    return AddATudeMessage.decode(new MessageInput(aBuf.toString().getBytes(ConstantVariable.UNI)));
                 }
             }
         }
-        readBuffer.reset();
-        //readBuffer.compact();
+
+        readBuffer.reset();       
+        readBuffer.compact();
+        
         return null;
     }
     /**
@@ -82,6 +108,14 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
     }
     
 
+    /**
+     * Constructer for BufferHander
+     * 
+     * @param server - an AsynchronousSocketChannel
+     * @param byteBuffer - byteBuffer to write out
+     * @param notifiServer - notifiServer to send notifi message
+     */
+    @SuppressWarnings("static-access")
     public BufferHandler(AsynchronousSocketChannel server,ByteBuffer byteBuffer, NoTiFiServer notifiServer) {
         this.server = server;
         this.byteBuffer=byteBuffer;
@@ -182,9 +216,12 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
             return;
         }
     }
-    
-  
-    
+
+    /**
+     * Given a AddATudeMessage, write out to the server's ByteBuffer
+     * 
+     * @param msg the AddATude Message want to write out
+     */
     public void writeToByteBuffer(AddATudeMessage msg){
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -204,7 +241,7 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
     
     @Override
     public void failed(Throwable exc, Logger logger) {
-
+        logger.log(Level.WARNING, "read failed", exc);
         
     }
 
@@ -215,16 +252,22 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
         }
         else{
             AddATudeMessage message = null;
+            int count = 0;
             try {
                 message = deframer(byteBuffer);
+                //System.out.println(message == null);
                 if(message == null){
                     
                     server.read(byteBuffer, null, new BufferHandler(server,byteBuffer,notifiServer));
                     return;
+                }else{
+                    count++;
+                    if(count == 2){
+                        System.out.println("there");
+                    }
                 }
-                System.out.println(message.toString());
             } catch (AddATudeException | IOException e) {
-                if(e.getMessage().equals(InvalidHeader)) {
+                if(InvalidHeader.equals(e.getMessage())) {
                     /*receive unexpected version*/
                     @SuppressWarnings("null")
                     String msg="Unexpected version: "+message.getVersion();
@@ -232,9 +275,7 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
                         writeToByteBuffer(new AddATudeError(message.getMapId(),msg));
                     } catch (AddATudeException e1) {
                     }
-                    ///////////////////////////////////////////
                     writeToLogger(msg);
-                    //read again or return??????????????????????????
                     ByteBuffer dst = ByteBuffer.allocate(CAP);
                     server.read(dst, null, new BufferHandler(server,dst,notifiServer));
                     return;
@@ -242,10 +283,7 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
                 else {
                     try {
                         writeToByteBuffer(new AddATudeError(0,e.getMessage()));
-                        /////////////////////////////////////
-                        //write to logger
                         writeToLogger(e.getMessage());
-                        //read again or return??????????????
                     } catch (AddATudeException e1) {
                     }
                 }
@@ -256,10 +294,7 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
                 String msg="No such map: "+message.getMapId();
                 try {
                     writeToByteBuffer(new AddATudeError(message.getMapId(),msg));
-                    /////////////////////////////////////
-                    //write to logger
                     writeToLogger(msg);
-                    //read again or return??????????????
                 } catch (AddATudeException e) {
                 }
             }
@@ -279,7 +314,6 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
                     writeToByteBuffer(new AddATudeError(message.getMapId(),msg));
                 } catch (AddATudeException e) {
                 }
-                ////////////////////////////////////
                 writeToLogger(msg);
                 break;
             /*receive unknown message*/
@@ -289,10 +323,10 @@ public class BufferHandler implements CompletionHandler<Integer,Logger>{
                     writeToByteBuffer(new AddATudeError(message.getMapId(),msg));
                 } catch (AddATudeException e) {
                 }
-                ////////////////////////////////////////////
                 writeToLogger(msg);
                 break;
             }
+            server.read(byteBuffer, null, new BufferHandler(server,byteBuffer,notifiServer));
         }
         
     }

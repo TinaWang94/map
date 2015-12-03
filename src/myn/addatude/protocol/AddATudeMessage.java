@@ -81,6 +81,7 @@ public abstract class AddATudeMessage {
 
         aString = in.readToSpace();
         version = aString;
+        //System.out.println("header =" + aString);
         if (!ConstantVariable.HEADER.equals(aString)) {
             throw new AddATudeException(InvalidHeader);
         }
