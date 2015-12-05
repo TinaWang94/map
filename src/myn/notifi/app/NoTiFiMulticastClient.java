@@ -80,7 +80,6 @@ public class NoTiFiMulticastClient {
                     receivePackage();
                  }catch(SocketTimeoutException e) {
                      //do noting, then go to the loop again
-                     e.printStackTrace();
                  }  
             }
             socket.leaveGroup(host);
@@ -106,7 +105,6 @@ public class NoTiFiMulticastClient {
         
         try {
             socket.receive(receivePkg);
-            System.out.println("received string:" + new String(receiveBuf, 0, receiveBuf.length));
         } catch (IOException e1) {
             if(e1 instanceof SocketTimeoutException) {
                 throw new SocketTimeoutException();
@@ -114,7 +112,6 @@ public class NoTiFiMulticastClient {
                 e1.printStackTrace();
             }
         }
-        System.out.println("here");
         try {
             byte [] realMsg = Arrays.copyOfRange(receivePkg.getData(), 0, receivePkg.getLength());
             NoTiFiMessage msg = NoTiFiMessage.decode(realMsg);
