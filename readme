@@ -4,7 +4,7 @@ The project was written in Java, using socket programming.
 JUnit tests were included as well.
 
 Two different server/client pattern:
-TCP server and client: the client can ask the server to add a location onto a google map by giving the longitude, latitude, location name and description
-UDP server and client: the client can register to the server to recieve notifications if there is anything change on the map.
+TCP server and client: the client can ask the server to add a location onto a google map by giving the longitude, latitude, location name and description.
+UDP server and client: the client can register to the server to receive notifications if there is anything change on the map.
 
 For further implementation, multicast, asynchronized server were being used.
